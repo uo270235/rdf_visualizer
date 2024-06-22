@@ -105,12 +105,14 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
   const parseShexInput = () => {
     try {
       const yasheValue = editorRef.current.getYasheValue();
-      shumlex.shExToXMI(yasheValue);
+      // shumlex.shExToXMI(yasheValue);
       
-      const xmi = shumlex.shExToXMI(yasheValue);
-      console.log("EL XMI SEÑORAS Y SEÑORES:");
-      console.log(xmi);
-      shumlex.crearDiagramaUML('mermaid-diagram', xmi);
+      // const xmi = shumlex.shExToXMI(yasheValue);
+      // conssole.log("EL XMI SEÑORAS Y SEÑORES:");
+      // console.log(xmi);
+      // shumlex.crearDiagramaUML('mermaid-diagram', xmi); 
+
+      shumlex.shexToUML("mermaid-diagram",yasheValue);
 
       // TODO: No funciona bien. Borrar svg al clicar validar y volver a crear
       shumlex.asignarEventos('mermaid-diagram');
@@ -161,7 +163,6 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
           <button className='button-20' onClick={async () => {
               const yasheValue = editorRef.current.getYasheValue();
               try {
-                shumlex.shExToXMI(yasheValue);
                 let plantuml = await callApi(yasheValue);
                 extractLogicShapes(plantuml);
                 if (plantuml !== null) {

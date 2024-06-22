@@ -54,6 +54,8 @@ export async function callApi(content) {
 function processResult(result) {
     const data = result.result.content;
     const jsonResult = JSON.parse(data);
+    console.log("DESDE NUESTRA API!!!!!!!!!!!!!");
+    console.log(JSON.stringify(jsonResult));
     let processed = {
         id: jsonResult.id,
         shapes: jsonResult.shapes.map(shape => ({
