@@ -5,8 +5,6 @@ import shumlex from 'shumlex';
 // import PlantUMLParser from '../parserShapes';
 import Diagram from './Diagram';
 import Alerta from './Alerta';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
 import { FaDownload } from 'react-icons/fa';
 import { callApi } from '../ApiManager';
 import { PlantUMLGenerator } from '../PlantUmlGenerator';
@@ -14,8 +12,7 @@ import { PlantUMLGenerator } from '../PlantUmlGenerator';
 
 function Editor() {
   const editorRef = useRef(null);
-  //const [shexCleared, setShexCleared] = useState('');
-  const [plantUMLCode, setPlantUMLCode] = useState('');
+  const [krokiSource, setKrokiSource] = useState('');
   const [parseError, setParseError] = useState(null);
   const [krokiSvg, setKrokiSvg] = useState(''); 
   const [isMermaidDiagramVisible, setIsMermaidDiagramVisible] = useState(false);
@@ -52,18 +49,18 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
     }, 1);
   }, []);
 
-  const extractLogicShapes = async (plantuml) => {
+  const createKroki = async (json_api,mermaidUML) => {
     try {
-      parseShexInput();
-      setPlantUMLCode(plantuml);
+      const generator = new PlantUMLGenerator(json_api,mermaidUML);
+      const plantUMLCode = generator.generate(); 
+      setKrokiSource(plantUMLCode);
       setParseError(null);
       setIsKrokiDiagramVisible(true);
-      return plantuml;
+      return plantUMLCode;
     } catch (error) {
       console.error("Error al parsear ShEx:", error);
       setParseError(error.message);
-      setPlantUMLCode('');
-      //setShexCleared('');
+      setKrokiSource('');
       setIsKrokiDiagramVisible(false);
       return null;
     }
@@ -77,6 +74,11 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
     }
   };
 
+  /**
+   * 
+   * @param {*} svgContent 
+   * @param {*} filename 
+   */
   const downloadDiagram = (svgContent, filename) => {
     if (svgContent) {
       const blob = new Blob([svgContent], { type: 'image/svg+xml' });
@@ -102,56 +104,22 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
     }
   };
 
-  const parseShexInput = () => {
+  const createMermaid = () => {
     try {
-      const yasheValue = editorRef.current.getYasheValue();
-      // shumlex.shExToXMI(yasheValue);
-      
-      // const xmi = shumlex.shExToXMI(yasheValue);
-      // conssole.log("EL XMI SEÑORAS Y SEÑORES:");
-      // console.log(xmi);
-      // shumlex.crearDiagramaUML('mermaid-diagram', xmi); 
-
-      shumlex.shexToUML("mermaid-diagram",yasheValue);
-
-      // TODO: No funciona bien. Borrar svg al clicar validar y volver a crear
+      let yasheValue = editorRef.current.getYasheValue();
+      let source = yasheValue.replace(/\bnot\b/gi, "NOT");
+      let mermaidUML = shumlex.shexToUML("mermaid-diagram",source);
       shumlex.asignarEventos('mermaid-diagram');
       setIsMermaidDiagramVisible(true);
+      return mermaidUML;
     } catch (error) {  
       console.error("Error al parsear ShEx:", error);
       setParseError(error.message);
-      setPlantUMLCode('');
+      setKrokiSource('');
       console.log("DESAPARECE 1");
       clearMermaidDiagram();
-      //setShexCleared('');
     }
   };
-
-
-  // useEffect(() => {
-  //   const parseShexInput = () => {
-  //     try {
-  //       const yasheValue = editorRef.current.getYasheValue();
-  //       shumlex.shExToXMI(yasheValue);
-  //       console.log("yashe? "+yasheValue);
-  //       const xmi = shumlex.shExToXMI(yasheValue);
-  //       shumlex.crearDiagramaUML('mermaid-diagram', xmi);
-  //       shumlex.asignarEventos('mermaid-diagram');
-  //       setIsMermaidDiagramVisible(true);
-  //     } catch (error) {  
-  //       console.error("Error al parsear ShEx:", error);
-  //       setParseError(error.message);
-  //       setPlantUMLCode('');
-  //       console.log("DESAPARECE 1");
-  //       clearMermaidDiagram();
-  //       //setShexCleared('');
-  //     }
-  //   };
-
-  //   if (shexCleared !== '') {
-  //     parseShexInput();
-  //   }
-  // }, [shexCleared]);
 
   return (
     <>
@@ -163,18 +131,22 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
           <button className='button-20' onClick={async () => {
               const yasheValue = editorRef.current.getYasheValue();
               try {
-                let plantuml = await callApi(yasheValue);
-                extractLogicShapes(plantuml);
-                if (plantuml !== null) {
-                  console.log("Plant UML generado correctamente");
-                }
+
+                //Obtenemos JSON a través de la API
+                let json_api = await callApi(yasheValue); 
+
+                // Generación de Mermaid
+                let mermaidUML=createMermaid();
+
+                // Generación de Kroki
+                createKroki(json_api,mermaidUML);
+
               } catch (error) {
                 console.error("Error al generar Plant UML:", error);
                 setParseError(error.message);
-                setPlantUMLCode('');
+                setKrokiSource('');
                 console.log("DESAPARECE 2");
                 clearMermaidDiagram();
-                //setShexCleared('');
               }
             }}>
             Ver Diagrama
@@ -185,25 +157,20 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
         <Alerta mensaje={`Error al parsear ShEx: ${parseError}`} onClose={() => setParseError(null)} />
       )}
               <div className="result-container">
-          {plantUMLCode && 
+          {krokiSource && 
           <div className="diagram-container kroki-diagram" data-zoom-on-wheel="zoom-amount: 0.01; min-scale: 0.3; max-scale: 20;" data-pan-on-drag>
-            <Diagram diagramSource={plantUMLCode} onSvgGenerated={setKrokiSvg} />
+            <Diagram diagramSource={krokiSource} onSvgGenerated={setKrokiSvg} />
             <div className='icon-container'>
-            {isKrokiDiagramVisible && (
               <button className='download-icon' onClick={downloadKrokiDiagram}>
                 <FaDownload />
               </button>
-            )}
             </div>
           </div>}
           <div className={isMermaidDiagramVisible ? (isKrokiDiagramVisible ? "diagram-container mermaid-diagram" : "diagram-container only-mermaid") : ""} data-zoom-on-wheel="zoom-amount: 0.01; min-scale: 0.3; max-scale: 20;" data-pan-on-drag>
           <div id="mermaid-diagram"></div>
-            {isMermaidDiagramVisible && (
               <button className='download-icon' onClick={() => downloadDiagram(document.getElementById('mermaid-diagram').innerHTML, 'diagramUMLRelationalClass')}>
                 <FaDownload />
               </button>
-              
-            )}
           </div>
         </div>
       </div>

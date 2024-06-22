@@ -70,13 +70,7 @@ function processResult(result) {
     console.log("Processed:");
     console.log(JSON.stringify(processed));
    
-    console.log(processed);
-    const generator = new PlantUMLGenerator(processed);
-    const plantUMLCode = generator.generate();
-    console.log(JSON.stringify("PPPPPPPPPROCESAMIENTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO-------->UML"));
-    console.log(plantUMLCode);
-    
-    return plantUMLCode;
+    return processed;
 }
 
 function extractIds(json) {
