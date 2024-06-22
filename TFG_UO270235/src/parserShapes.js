@@ -109,6 +109,7 @@ class PlantUMLParser {
             }
         });
 
+        console.log(stack);
         const finalStack = [];
         stack.forEach(component => {
             if (component === 'AND' || component === 'OR' || component === 'NOT') {
@@ -156,6 +157,9 @@ class PlantUMLParser {
             this.generatePlantUML(components);
         });
         this.uml += '@enduml';
+        
+        console.log("EL BUENO SI O KE -------------------------------------------------");
+        console.log(this.uml);
         return this.uml;
     }
 }

@@ -2,16 +2,19 @@ import React, { useState, useEffect, useRef } from 'react';
 import './editor.css';
 import EditorYashe from './yashe';
 import shumlex from 'shumlex';
-import PlantUMLParser from '../parserShapes';
+// import PlantUMLParser from '../parserShapes';
 import Diagram from './Diagram';
 import Alerta from './Alerta';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { FaDownload } from 'react-icons/fa';
+import { callApi } from '../ApiManager';
+import { PlantUMLGenerator } from '../PlantUmlGenerator';
+
 
 function Editor() {
   const editorRef = useRef(null);
-  const [shexCleared, setShexCleared] = useState('');
+  //const [shexCleared, setShexCleared] = useState('');
   const [plantUMLCode, setPlantUMLCode] = useState('');
   const [parseError, setParseError] = useState(null);
   const [krokiSvg, setKrokiSvg] = useState(''); 
@@ -49,34 +52,18 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
     }, 1);
   }, []);
 
-  const extractLogicShapes = (shex) => {
+  const extractLogicShapes = async (plantuml) => {
     try {
-      const shapeRegex = /:\w+\s+(NOT\s+)?(:\w+\s*(?:AND|OR|NOT|AND\s+NOT|OR\s+NOT)\s*)*:\w+/gi;
-      const matches = shex.match(shapeRegex);
-      const cleanedShex = shex.replace(shapeRegex, '').trim();
-      setShexCleared(cleanedShex);
-
-      if (!matches) {
-        setPlantUMLCode('');
-        setIsKrokiDiagramVisible(false);
-        return [];
-      }
-
-      let xmi = shumlex.shExToXMI(cleanedShex);
-      let classUML_F = shumlex.crearMUML(xmi);
-
-      const parser = new PlantUMLParser(matches, classUML_F);
-      const plantUMLCodeGenerated = parser.parse();
-
-      setPlantUMLCode(plantUMLCodeGenerated);
+      parseShexInput();
+      setPlantUMLCode(plantuml);
       setParseError(null);
       setIsKrokiDiagramVisible(true);
-      return matches || [];
+      return plantuml;
     } catch (error) {
       console.error("Error al parsear ShEx:", error);
       setParseError(error.message);
       setPlantUMLCode('');
-      setShexCleared('');
+      //setShexCleared('');
       setIsKrokiDiagramVisible(false);
       return null;
     }
@@ -115,50 +102,78 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
     }
   };
 
-  useEffect(() => {
-    const parseShexInput = () => {
-      try {
-        const yasheValue = editorRef.current.getYasheValue();
-        shumlex.shExToXMI(yasheValue);
-        const xmi = shumlex.shExToXMI(shexCleared);
-        shumlex.crearDiagramaUML('mermaid-diagram', xmi);
-        shumlex.asignarEventos('mermaid-diagram');
-        setIsMermaidDiagramVisible(true);
-      } catch (error) {  
-        console.error("Error al parsear ShEx:", error);
-        setParseError(error.message);
-        setPlantUMLCode('');
-        clearMermaidDiagram();
-        setShexCleared('');
-      }
-    };
+  const parseShexInput = () => {
+    try {
+      const yasheValue = editorRef.current.getYasheValue();
+      shumlex.shExToXMI(yasheValue);
+      
+      const xmi = shumlex.shExToXMI(yasheValue);
+      console.log("EL XMI SEÑORAS Y SEÑORES:");
+      console.log(xmi);
+      shumlex.crearDiagramaUML('mermaid-diagram', xmi);
 
-    if (shexCleared !== '') {
-      parseShexInput();
+      // TODO: No funciona bien. Borrar svg al clicar validar y volver a crear
+      shumlex.asignarEventos('mermaid-diagram');
+      setIsMermaidDiagramVisible(true);
+    } catch (error) {  
+      console.error("Error al parsear ShEx:", error);
+      setParseError(error.message);
+      setPlantUMLCode('');
+      console.log("DESAPARECE 1");
+      clearMermaidDiagram();
+      //setShexCleared('');
     }
-  }, [shexCleared]);
+  };
+
+
+  // useEffect(() => {
+  //   const parseShexInput = () => {
+  //     try {
+  //       const yasheValue = editorRef.current.getYasheValue();
+  //       shumlex.shExToXMI(yasheValue);
+  //       console.log("yashe? "+yasheValue);
+  //       const xmi = shumlex.shExToXMI(yasheValue);
+  //       shumlex.crearDiagramaUML('mermaid-diagram', xmi);
+  //       shumlex.asignarEventos('mermaid-diagram');
+  //       setIsMermaidDiagramVisible(true);
+  //     } catch (error) {  
+  //       console.error("Error al parsear ShEx:", error);
+  //       setParseError(error.message);
+  //       setPlantUMLCode('');
+  //       console.log("DESAPARECE 1");
+  //       clearMermaidDiagram();
+  //       //setShexCleared('');
+  //     }
+  //   };
+
+  //   if (shexCleared !== '') {
+  //     parseShexInput();
+  //   }
+  // }, [shexCleared]);
 
   return (
     <>
-    <div class="container">
+    <div className="container">
       <div className='editor'>
         <h1 className="page-title">Schema (ShEx)</h1>
         <EditorYashe ref={editorRef} />
         <div className='editor-buttons'>
-          <button className='button-20' onClick={() => {
+          <button className='button-20' onClick={async () => {
               const yasheValue = editorRef.current.getYasheValue();
               try {
                 shumlex.shExToXMI(yasheValue);
-                const result = extractLogicShapes(yasheValue);
-                if (result !== null) {
-                  console.log("Shapes extraídas y procesadas correctamente.");
+                let plantuml = await callApi(yasheValue);
+                extractLogicShapes(plantuml);
+                if (plantuml !== null) {
+                  console.log("Plant UML generado correctamente");
                 }
               } catch (error) {
-                console.error("Error al parsear ShEx:", error);
+                console.error("Error al generar Plant UML:", error);
                 setParseError(error.message);
                 setPlantUMLCode('');
+                console.log("DESAPARECE 2");
                 clearMermaidDiagram();
-                setShexCleared('');
+                //setShexCleared('');
               }
             }}>
             Ver Diagrama

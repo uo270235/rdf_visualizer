@@ -4,6 +4,8 @@ const Diagram = ({ diagramSource, onSvgGenerated }) => {
   const [diagram, setDiagram] = useState('');
 
   useEffect(() => {
+    console.log("--------- DESDE DIAGRAM ------------")
+    console.log(diagramSource);
     if (diagramSource) {
       fetch('https://kroki.io/plantuml/svg', {
         method: 'POST',
