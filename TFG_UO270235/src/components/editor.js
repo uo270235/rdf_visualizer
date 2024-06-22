@@ -30,7 +30,7 @@ function Editor() {
       const example = `prefix : <http://example.org/>
 prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 
-:Usuario :Hombre OR :Mujer AND NOT :Perro 
+:Usuario :Hombre OR :Mujer AND NOT {:lolo[] } 
 
 :Hombre {
   :genero [ :Masculino ];

@@ -1,12 +1,13 @@
 export class PlantUMLGenerator {
-    constructor(json) {
+  constructor(json) {
       this.json = json;
       this.counter = 0;
+      this.counterBlank=1;
       this.output = [];
       this.initializeSkinParams();
-    }
-  
-    initializeSkinParams() {
+  }
+
+  initializeSkinParams() {
       this.output.push("@startuml");
       this.output.push("allowmixing");
       this.output.push("skinparam component {");
@@ -28,41 +29,71 @@ export class PlantUMLGenerator {
       this.output.push("RoundCorner 15");
       this.output.push("}");
       this.output.push("");
-    }
-  
-    generate() {
+  }
+
+  generate() {
       this.json.forEach(node => {
-        this.output.push(`class ${node.id} {}`);
-        this.processNode(node, node.id);
+          this.output.push(`class ${node.id} {}`);
+          this.processNode(node, node.id);
       });
       this.output.push("@enduml");
       return this.output.join("\n");
-    }
-  
-    processNode(node, parentId) {
-      if (node.type === "ShapeOr" || node.type === "ShapeAnd" || node.type === "ShapeNot") {
-        const typeLabel = node.type.replace('Shape', '').toUpperCase(); // Convert to AND, OR, NOT
-        const id = `${typeLabel}_${this.counter++}`;
-        this.output.push(`component [ ] as ${id} <<${typeLabel}>>`);
-        if (parentId) {
-          this.output.push(`${parentId} --> ${id}`);
-        }
-        if (node.shapeExprs && Array.isArray(node.shapeExprs)) {
-          node.shapeExprs.forEach(child => {
-            this.processNode(child, id);
-          });
-        } else if (node.shapeExpr && typeof node.shapeExpr === 'object') {
-          this.processNode(node.shapeExpr, id);
-        }
-      } else if (node.type === "NodeConstraint") {
-        const className = node.datatype;
-        this.output.push(`class ${className} {}`);
-        if (parentId) {
-          this.output.push(`${parentId} --> ${className}`);
-        }
-      }
-    }
   }
 
+  processNode(node, parentId) {
+      if (node.type === "ShapeOr" || node.type === "ShapeAnd" || node.type === "ShapeNot") {
+          const typeLabel = node.type.replace('Shape', '').toUpperCase(); // Convert to AND, OR, NOT
+          const id = `${typeLabel}_${this.counter++}`;
+          this.output.push(`component [ ] as ${id} <<${typeLabel}>>`);
+          if (parentId) {
+              this.output.push(`${parentId} --> ${id}`);
+          }
+          if (node.shapeExprs && Array.isArray(node.shapeExprs)) {
+              node.shapeExprs.forEach(child => {
+                  this.processNode(child, id);
+              });
+          } else if (node.shapeExpr && typeof node.shapeExpr === 'object') {
+              this.processNode(node.shapeExpr, id);
+          }
+      } else if (node.type === "NodeConstraint") {
+          const className = node.datatype;
+          this.output.push(`class ${className} {}`);
+          if (parentId) {
+              this.output.push(`${parentId} --> ${className}`);
+          }
+      } else if (node.type === "Shape" && node.expression) {
+          if (node.expression.type === "TripleConstraint") {
+              this.processTripleConstraint(node.expression, parentId);
+          } else if (node.expression.type === "EachOf") {
+              this.processEachOf(node.expression, parentId);
+          }
+      }
+  }
 
- 
+  processTripleConstraint(expression, parentId) {
+      const attribute = `${expression.predicate}: ${expression.valueExpr.values.join(', ')}`;
+      this.output.push(`class Blank_${this.counterBlank} {`);
+      this.output.push(`    ${attribute}`);
+      this.output.push('}');
+      if (parentId) {
+          this.output.push(`${parentId} --> Blank_${this.counterBlank}`);
+      }
+  }
+
+  processEachOf(expression, parentId) {
+      const uniqueId = `Blank_${this.counterBlank++}`;
+      const attributes = expression.expressions.map(expr => {
+          if (expr.type === "TripleConstraint") {
+              return `${expr.predicate}: ${expr.valueExpr.values.join(', ')}`;
+          }
+          return '';
+      }).filter(Boolean).join('\n    ');
+
+      this.output.push(`class ${uniqueId} {`);
+      this.output.push(`    ${attributes}`);
+      this.output.push('}');
+      if (parentId) {
+          this.output.push(`${parentId} --> ${uniqueId}`);
+      }
+  }
+}
