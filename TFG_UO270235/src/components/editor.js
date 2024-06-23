@@ -53,6 +53,8 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
     try {
       const generator = new PlantUMLGenerator(json_api,mermaidUML);
       const plantUMLCode = generator.generate(); 
+      console.log("kroki source!!!!!!!!!!!!");
+      console.log(plantUMLCode);
       setKrokiSource(plantUMLCode);
       setParseError(null);
       setIsKrokiDiagramVisible(true);
@@ -154,7 +156,7 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
         </div>
            </div>
            {parseError && (
-        <Alerta mensaje={`Error al parsear ShEx: ${parseError}`} onClose={() => setParseError(null)} />
+        <Alerta mensaje={`Error al parsear ShEx,revise su entrada.`} onClose={() => setParseError(null)} />
       )}
               <div className="result-container">
           {krokiSource && 
