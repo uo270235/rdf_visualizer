@@ -44,7 +44,16 @@ export class PlantUMLGenerator {
     }
 
     processNode(node, parentId) {
-        if (node.type === "ShapeOr" || node.type === "ShapeAnd" || node.type === "ShapeNot") {
+        if (typeof node === 'string') {
+            if (node === '') {
+                const blankId = `Blank_${this.counterBlank++}`;
+                this.output.push(`class ${blankId} {}`);
+                this.output.push(`${parentId} --> ${blankId}`);
+            } else {
+                this.output.push(`class ${node} {\n${this.extractAttributes(node)}\n}`);
+                this.output.push(`${parentId} --> ${node}`);
+            }
+        } else if (node.type === "ShapeOr" || node.type === "ShapeAnd" || node.type === "ShapeNot") {
             const typeLabel = node.type.replace('Shape', '').toUpperCase(); // Convert to AND, OR, NOT
             const id = `${typeLabel}_${uniqid()}`;
             this.output.push(`component [ ] as ${id} <<${typeLabel}>>`);
@@ -55,14 +64,24 @@ export class PlantUMLGenerator {
                 node.shapeExprs.forEach(child => {
                     this.processNode(child, id);
                 });
-            } else if (node.shapeExpr && typeof node.shapeExpr === 'object') {
+            } else if (node.shapeExpr) {
                 this.processNode(node.shapeExpr, id);
+            } else {
+                const blankId = `Blank_${this.counterBlank++}`;
+                this.output.push(`class ${blankId} {}`);
+                this.output.push(`${id} --> ${blankId}`);
             }
         } else if (node.type === "NodeConstraint") {
             const className = node.datatype;
-            this.output.push(`class ${className} {\n${this.extractAttributes(className)}\n}`);
-            if (parentId) {
-                this.output.push(`${parentId} --> ${className}`);
+            if (className === '') {
+                const blankId = `Blank_${this.counterBlank++}`;
+                this.output.push(`class ${blankId} {}`);
+                this.output.push(`${parentId} --> ${blankId}`);
+            } else {
+                this.output.push(`class ${className} {}`);
+                if (parentId) {
+                    this.output.push(`${parentId} --> ${className}`);
+                }
             }
         } else if (node.type === "Shape" && node.expression) {
             if (node.expression.type === "TripleConstraint") {
