@@ -38,7 +38,20 @@ export class PlantUMLGenerator {
 
     generate() {
         this.json.forEach(node => {
-            this.output.push(`class ${node.id} {}`);
+
+            if(node.id==="start"){
+                this.output.push(`component "Start" as start`);
+            if(node.type==="UniqueStart"){
+                if (typeof node.shapeExpr === 'string') {
+                    const attributes = this.extractAttributes(node.shapeExpr);
+                    this.output.push(`class "${node.shapeExpr}" {\n${attributes}\n}`);
+                    this.output.push(`start --> "${node.shapeExpr}"`);
+                } else {
+                    this.processNode(node.shapeExpr, "start");
+                }
+            }
+        }else{
+            this.output.push(`class ${node.id} {}`);}
             this.output.push("");  // Añadir una línea en blanco después de cada clase
 
             this.processNode(node, node.id);
