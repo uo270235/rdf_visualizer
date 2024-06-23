@@ -52,8 +52,13 @@ export async function callApi(content) {
  * @returns {Object} - El objeto procesado con la información deseada.
  */
 function processResult(result) {
+    console.log("resuuuuuuuuuuuuuuuuult");
+    console.log(result);
     const data = result.result.content;
     const jsonResult = JSON.parse(data);
+
+    console.log("dataaaaaaaaaaaaa");
+    console.log(jsonResult);
     console.log("DESDE NUESTRA API!!!!!!!!!!!!!");
     console.log(JSON.stringify(jsonResult));
     let processed = {
@@ -61,14 +66,21 @@ function processResult(result) {
         shapes: jsonResult.shapes.map(shape => ({
             id: shape.id,
             shapeExpr: shape.shapeExpr,
-        }))
+        })),
+        start:""
     };
-    // processed = extractIds(proocessed);
-    const formattedResult = extractIds(processed)
-    processed = obtainLogicShapes(formattedResult);
+
+    if (jsonResult.start) {
+        console.log("entra????");
+        processed.start = jsonResult.start;
+    }
     
+    // processed = extractIds(proocessed);
+    const formattedResult = extractIds(processed);
+    processed = obtainLogicShapes(formattedResult);
     console.log("Processed:");
     console.log(JSON.stringify(processed));
+
    
     return processed;
 }
@@ -90,6 +102,9 @@ function extractIds(json) {
 
     for (let key in json) {
         if (typeof json[key] === 'string' && json[key].startsWith('http')) {
+            json[key] = getLastSegment(json[key]);
+        } 
+        else if (typeof json[key] === 'string' && json[key].startsWith('file')) {
             json[key] = getLastSegment(json[key]);
         } else if (typeof json[key] === 'object' && json[key] !== null) {
             json[key] = extractIds(json[key]);

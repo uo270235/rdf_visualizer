@@ -1,6 +1,14 @@
 export function obtainLogicShapes(data) {
     const logicShapes = [];
 
+    if(data.start){
+        logicShapes.push({
+            id:"start",
+            type:data.start.type,
+            shapeExpr:data.start.shapeExprs
+        })
+    }
+
     data.shapes.forEach(shape => {
         if (shape.shapeExpr.type === "ShapeOr" || shape.shapeExpr.type === "ShapeAnd") {
             logicShapes.push({
@@ -18,7 +26,5 @@ export function obtainLogicShapes(data) {
         }
     });
     
-    console.log("xxxxxxxxxxxxxxxxxxxxxxxxx");
-    console.log(logicShapes);
     return logicShapes;
 }

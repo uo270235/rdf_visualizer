@@ -13,6 +13,8 @@ export class PlantUMLGenerator {
     initializeSkinParams() {
         this.output.push("@startuml");
         this.output.push("allowmixing");
+        this.output.push("left to right direction");  // Añadir la directiva de dirección
+
         this.output.push("skinparam component {");
         this.output.push("BackgroundColor<<AND>> #1E3A8A");
         this.output.push("BorderColor<<AND>> #60A5FA");
@@ -37,7 +39,10 @@ export class PlantUMLGenerator {
     generate() {
         this.json.forEach(node => {
             this.output.push(`class ${node.id} {}`);
+            this.output.push("");  // Añadir una línea en blanco después de cada clase
+
             this.processNode(node, node.id);
+            this.output.push("");  // Añadir una línea en blanco después de cada procesamiento de nodo
         });
         this.output.push("@enduml");
         return this.output.join("\n");
@@ -49,9 +54,11 @@ export class PlantUMLGenerator {
                 const blankId = `Blank_${this.counterBlank++}`;
                 this.output.push(`class ${blankId} {}`);
                 this.output.push(`${parentId} --> ${blankId}`);
+                this.output.push("");  // Añadir una línea en blanco después de la relación
             } else {
                 this.output.push(`class ${node} {\n${this.extractAttributes(node)}\n}`);
                 this.output.push(`${parentId} --> ${node}`);
+                this.output.push("");  // Añadir una línea en blanco después de la relación
             }
         } else if (node.type === "ShapeOr" || node.type === "ShapeAnd" || node.type === "ShapeNot") {
             const typeLabel = node.type.replace('Shape', '').toUpperCase(); // Convert to AND, OR, NOT
@@ -59,9 +66,14 @@ export class PlantUMLGenerator {
             this.output.push(`component [ ] as ${id} <<${typeLabel}>>`);
             if (parentId) {
                 this.output.push(`${parentId} --> ${id}`);
+                this.output.push("");  // Añadir una línea en blanco después de la relación
             }
             if (node.shapeExprs && Array.isArray(node.shapeExprs)) {
                 node.shapeExprs.forEach(child => {
+                    this.processNode(child, id);
+                });
+            } else if (node.shapeExpr && Array.isArray(node.shapeExpr)) {
+                node.shapeExpr.forEach(child => {
                     this.processNode(child, id);
                 });
             } else if (node.shapeExpr) {
@@ -70,6 +82,7 @@ export class PlantUMLGenerator {
                 const blankId = `Blank_${this.counterBlank++}`;
                 this.output.push(`class ${blankId} {}`);
                 this.output.push(`${id} --> ${blankId}`);
+                this.output.push("");  // Añadir una línea en blanco después de la relación
             }
         } else if (node.type === "NodeConstraint") {
             const className = node.datatype;
@@ -77,10 +90,12 @@ export class PlantUMLGenerator {
                 const blankId = `Blank_${this.counterBlank++}`;
                 this.output.push(`class ${blankId} {}`);
                 this.output.push(`${parentId} --> ${blankId}`);
+                this.output.push("");  // Añadir una línea en blanco después de la relación
             } else {
                 this.output.push(`class ${className} {}`);
                 if (parentId) {
                     this.output.push(`${parentId} --> ${className}`);
+                    this.output.push("");  // Añadir una línea en blanco después de la relación
                 }
             }
         } else if (node.type === "Shape" && node.expression) {
@@ -89,6 +104,11 @@ export class PlantUMLGenerator {
             } else if (node.expression.type === "EachOf") {
                 this.processEachOf(node.expression, parentId);
             }
+        } else if (Array.isArray(node.shapeExpr)) {
+            node.shapeExpr.forEach(child => {
+                this.processNode(child, parentId);
+                this.output.push("");  // Añadir una línea en blanco después de cada procesamiento de nodo hijo
+            });
         }
     }
 
@@ -97,6 +117,7 @@ export class PlantUMLGenerator {
         this.output.push(`class Blank_${this.counterBlank} {\n${attribute}\n}`);
         if (parentId) {
             this.output.push(`${parentId} --> Blank_${this.counterBlank}`);
+            this.output.push("");  // Añadir una línea en blanco después de la relación
         }
         this.counterBlank++;
     }
@@ -113,6 +134,7 @@ export class PlantUMLGenerator {
         this.output.push(`class ${uniqueId} {\n${attributes}\n}`);
         if (parentId) {
             this.output.push(`${parentId} --> ${uniqueId}`);
+            this.output.push("");  // Añadir una línea en blanco después de la relación
         }
     }
 
