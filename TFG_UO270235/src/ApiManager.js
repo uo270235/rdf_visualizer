@@ -37,6 +37,7 @@ export async function callApi(content) {
         // Parsear la respuesta JSON
         let result = await response.json();
         result = processResult(result);
+
         return result;
     } catch (error) {
         // Manejo de errores en la llamada fetch
@@ -52,15 +53,9 @@ export async function callApi(content) {
  * @returns {Object} - El objeto procesado con la información deseada.
  */
 function processResult(result) {
-    console.log("resuuuuuuuuuuuuuuuuult");
-    console.log(result);
     const data = result.result.content;
     const jsonResult = JSON.parse(data);
 
-    console.log("dataaaaaaaaaaaaa");
-    console.log(jsonResult);
-    console.log("DESDE NUESTRA API!!!!!!!!!!!!!");
-    console.log(JSON.stringify(jsonResult));
     let processed = {
         id: jsonResult.id,
         shapes: jsonResult.shapes.map(shape => ({

@@ -48,16 +48,29 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
       editorRef.current.setYasheValue(example);
     }, 1);
   }, []);
-
+  const recreateMermaid = async() => {
+    console.log("DEBERIA RECREARLO");
+    const container = document.getElementById('mermaid-diagram-container');
+    const oldMermaidDiagram = document.getElementById('mermaid-diagram');
+    if (oldMermaidDiagram) {
+      container.removeChild(oldMermaidDiagram);
+    }
+    const newMermaidDiagram = document.createElement('div');
+    newMermaidDiagram.id = 'mermaid-diagram';
+    container.insertBefore(newMermaidDiagram, container.firstChild);
+  };
   const createKroki = async (json_api,mermaidUML) => {
     try {
+      console.log("big ball of mud");
+      console.log(json_api);
       const generator = new PlantUMLGenerator(json_api,mermaidUML);
       const plantUMLCode = generator.generate(); 
       console.log("kroki source!!!!!!!!!!!!");
       console.log(plantUMLCode);
       setKrokiSource(plantUMLCode);
       setParseError(null);
-      setIsKrokiDiagramVisible(true);
+      if(json_api.length==0)
+        setKrokiSource();
       return plantUMLCode;
     } catch (error) {
       console.error("Error al parsear ShEx:", error);
@@ -133,7 +146,7 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
           <button className='button-20' onClick={async () => {
               const yasheValue = editorRef.current.getYasheValue();
               try {
-
+                await recreateMermaid();
                 //Obtenemos JSON a través de la API
                 let json_api = await callApi(yasheValue); 
 
@@ -168,7 +181,7 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
               </button>
             </div>
           </div>}
-          <div className={isMermaidDiagramVisible ? (isKrokiDiagramVisible ? "diagram-container mermaid-diagram" : "diagram-container only-mermaid") : ""} data-zoom-on-wheel="zoom-amount: 0.01; min-scale: 0.3; max-scale: 20;" data-pan-on-drag>
+          <div id="mermaid-diagram-container" className={isMermaidDiagramVisible ? (krokiSource ? "diagram-container mermaid-diagram" : "diagram-container only-mermaid") : ""} data-zoom-on-wheel="zoom-amount: 0.01; min-scale: 0.3; max-scale: 20;" data-pan-on-drag>
           <div id="mermaid-diagram"></div>
               <button className='download-icon' onClick={() => downloadDiagram(document.getElementById('mermaid-diagram').innerHTML, 'diagramUMLRelationalClass')}>
                 <FaDownload />
