@@ -2,11 +2,27 @@ export function obtainLogicShapes(data) {
     const logicShapes = [];
 
     if(data.start){
+        if(data.start.shapeExprs != undefined){
         logicShapes.push({
             id:"start",
             type:data.start.type,
             shapeExpr:data.start.shapeExprs
-        })
+        })}
+        else if(data.start.shapeExprs == undefined && data.start.shapeExpr!=undefined){
+            logicShapes.push({
+                id:"start",
+                type:data.start.type,
+                shapeExpr:data.start.shapeExpr
+            })
+        }
+        else if(data.start.shapeExprs == undefined && data.start.shapeExpr==undefined){
+            logicShapes.push({
+                id:"start",
+                type:"UniqueStart",
+                shapeExpr:data.start
+            })
+        }
+        
     }
 
     data.shapes.forEach(shape => {

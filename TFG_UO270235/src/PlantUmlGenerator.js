@@ -54,11 +54,9 @@ export class PlantUMLGenerator {
                 const blankId = `Blank_${this.counterBlank++}`;
                 this.output.push(`class ${blankId} {}`);
                 this.output.push(`${parentId} --> ${blankId}`);
-                this.output.push("");  // Añadir una línea en blanco después de la relación
             } else {
                 this.output.push(`class ${node} {\n${this.extractAttributes(node)}\n}`);
                 this.output.push(`${parentId} --> ${node}`);
-                this.output.push("");  // Añadir una línea en blanco después de la relación
             }
         } else if (node.type === "ShapeOr" || node.type === "ShapeAnd" || node.type === "ShapeNot") {
             const typeLabel = node.type.replace('Shape', '').toUpperCase(); // Convert to AND, OR, NOT
@@ -66,7 +64,6 @@ export class PlantUMLGenerator {
             this.output.push(`component [ ] as ${id} <<${typeLabel}>>`);
             if (parentId) {
                 this.output.push(`${parentId} --> ${id}`);
-                this.output.push("");  // Añadir una línea en blanco después de la relación
             }
             if (node.shapeExprs && Array.isArray(node.shapeExprs)) {
                 node.shapeExprs.forEach(child => {
@@ -82,7 +79,6 @@ export class PlantUMLGenerator {
                 const blankId = `Blank_${this.counterBlank++}`;
                 this.output.push(`class ${blankId} {}`);
                 this.output.push(`${id} --> ${blankId}`);
-                this.output.push("");  // Añadir una línea en blanco después de la relación
             }
         } else if (node.type === "NodeConstraint") {
             const className = node.datatype;
@@ -91,12 +87,10 @@ export class PlantUMLGenerator {
                 const blankId = `Blank_${this.counterBlank++}`;
                 this.output.push(`class ${blankId} {}`);
                 this.output.push(`${parentId} --> ${blankId}`);
-                this.output.push("");  // Añadir una línea en blanco después de la relación
             } else {
                 this.output.push(`class "${className}" as ${uniqueClassName} {}`);
                 if (parentId) {
                     this.output.push(`${parentId} --> ${uniqueClassName}`);
-                    this.output.push("");  // Añadir una línea en blanco después de la relación
                 }
             }
         } else if (node.type === "Shape" && node.expression) {
@@ -108,7 +102,6 @@ export class PlantUMLGenerator {
         } else if (Array.isArray(node.shapeExpr)) {
             node.shapeExpr.forEach(child => {
                 this.processNode(child, parentId);
-                this.output.push("");  // Añadir una línea en blanco después de cada procesamiento de nodo hijo
             });
         }
     }
@@ -118,7 +111,6 @@ export class PlantUMLGenerator {
         this.output.push(`class Blank_${this.counterBlank} {\n${attribute}\n}`);
         if (parentId) {
             this.output.push(`${parentId} --> Blank_${this.counterBlank}`);
-            this.output.push("");  // Añadir una línea en blanco después de la relación
         }
         this.counterBlank++;
     }
@@ -135,7 +127,6 @@ export class PlantUMLGenerator {
         this.output.push(`class ${uniqueId} {\n${attributes}\n}`);
         if (parentId) {
             this.output.push(`${parentId} --> ${uniqueId}`);
-            this.output.push("");  // Añadir una línea en blanco después de la relación
         }
     }
 
