@@ -13,7 +13,7 @@ export class PlantUMLGenerator {
     initializeSkinParams() {
         this.output.push("@startuml");
         this.output.push("allowmixing");
-        this.output.push("left to right direction");  // Añadir la directiva de dirección
+        this.output.push("left to right direction");
 
         this.output.push("skinparam component {");
         this.output.push("BackgroundColor<<AND>> #1E3A8A");
@@ -86,15 +86,16 @@ export class PlantUMLGenerator {
             }
         } else if (node.type === "NodeConstraint") {
             const className = node.datatype;
+            const uniqueClassName = `${className}_${uniqid()}`;
             if (className === '') {
                 const blankId = `Blank_${this.counterBlank++}`;
                 this.output.push(`class ${blankId} {}`);
                 this.output.push(`${parentId} --> ${blankId}`);
                 this.output.push("");  // Añadir una línea en blanco después de la relación
             } else {
-                this.output.push(`class ${className} {}`);
+                this.output.push(`class "${className}" as ${uniqueClassName} {}`);
                 if (parentId) {
-                    this.output.push(`${parentId} --> ${className}`);
+                    this.output.push(`${parentId} --> ${uniqueClassName}`);
                     this.output.push("");  // Añadir una línea en blanco después de la relación
                 }
             }
