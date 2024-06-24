@@ -38,21 +38,20 @@ export class PlantUMLGenerator {
 
     generate() {
         this.json.forEach(node => {
-
-            if(node.id==="start"){
+            if (node.id === "start") {
                 this.output.push(`component "Start" as start`);
-            if(node.type==="UniqueStart"){
-                if (typeof node.shapeExpr === 'string') {
-                    const attributes = this.extractAttributes(node.shapeExpr);
-                    this.output.push(`class "${node.shapeExpr}" {\n${attributes}\n}`);
-                    this.output.push(`start --> "${node.shapeExpr}"`);
-                } else {
-                    this.processNode(node.shapeExpr, "start");
+                if (node.type === "UniqueStart") {
+                    if (typeof node.shapeExpr === 'string') {
+                        const attributes = this.extractAttributes(node.shapeExpr);
+                        this.output.push(`class "${node.shapeExpr}" {\n${attributes}\n}`);
+                        this.output.push(`start --> "${node.shapeExpr}"`);
+                    } else {
+                        this.processNode(node.shapeExpr, "start");
+                    }
                 }
+            } else {
+                this.output.push(`class ${node.id} {}`);
             }
-        }else{
-            this.output.push(`class ${node.id} {}`);}
-
             this.processNode(node, node.id);
         });
         this.output.push("@enduml");
@@ -115,13 +114,14 @@ export class PlantUMLGenerator {
             });
         }
     }
-    
+
     processTripleConstraint(expression, parentId) {
-        let attribute = `${expression.predicate}`;
+        let attribute = `:${expression.predicate} [ `;
         if (expression.valueExpr && expression.valueExpr.values && expression.valueExpr.values.length > 0) {
-            const values = expression.valueExpr.values.map(val => typeof val === 'string' ? val : val.value).join(', ');
-            attribute += `: ${values}`;
+            const values = expression.valueExpr.values.map(val => typeof val === 'string' ? `:${val}` : val.value).join(', ');
+            attribute += `${values}`;
         }
+        attribute += ' ]';
         this.output.push(`class Blank_${this.counterBlank} {\n${attribute}\n}`);
         if (parentId) {
             this.output.push(`${parentId} --> Blank_${this.counterBlank}`);
@@ -129,26 +129,33 @@ export class PlantUMLGenerator {
         this.counterBlank++;
     }
     
-    
+
     processEachOf(expression, parentId) {
         const uniqueId = `Blank_${this.counterBlank++}`;
         const attributes = expression.expressions.map(expr => {
             if (expr.type === "TripleConstraint") {
-                return `${expr.predicate}: ${expr.valueExpr.values.join(', ')}`;
+                let attribute = `:${expr.predicate} [ `;
+                if (expr.valueExpr && expr.valueExpr.values && expr.valueExpr.values.length > 0) {
+                    const values = expr.valueExpr.values.map(val => typeof val === 'string' ? `:${val}` : val.value).join(', ');
+                    attribute += `${values}`;
+                }
+                attribute += ' ]';
+                return attribute;
             }
             return '';
         }).filter(Boolean).join('\n');
-
+    
         this.output.push(`class ${uniqueId} {\n${attributes}\n}`);
         if (parentId) {
             this.output.push(`${parentId} --> ${uniqueId}`);
         }
     }
+    
 
     extractAttributes(className) {
         const regex = new RegExp(`class (_?${className}_?|ex_${className}) \\{([^}]*)\\}`, 's');
         const match = this.umlText.match(regex);
-    
+
         if (match && match[2]) {
             return match[2].trim().split(';').map(attr => attr.trim()).join('\n');
         } else {
