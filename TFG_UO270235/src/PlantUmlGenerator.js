@@ -92,17 +92,16 @@ export class PlantUMLGenerator {
                 this.output.push(`${id} --> ${blankId}`);
             }
         } else if (node.type === "NodeConstraint") {
-            const className = node.datatype;
+            const className = node.datatype || "NodeConstraint";
             const uniqueClassName = `${className}_${uniqid()}`;
-            if (className === '') {
-                const blankId = `Blank_${this.counterBlank++}`;
-                this.output.push(`class ${blankId} {}`);
-                this.output.push(`${parentId} --> ${blankId}`);
+            if (node.values && node.values.length > 0) {
+                const values = node.values.map(val => typeof val === 'string' ? val : val.value).join(', ');
+                this.output.push(`class "${className}" as ${uniqueClassName} {\nvalues: ${values}\n}`);
             } else {
                 this.output.push(`class "${className}" as ${uniqueClassName} {}`);
-                if (parentId) {
-                    this.output.push(`${parentId} --> ${uniqueClassName}`);
-                }
+            }
+            if (parentId) {
+                this.output.push(`${parentId} --> ${uniqueClassName}`);
             }
         } else if (node.type === "Shape" && node.expression) {
             if (node.expression.type === "TripleConstraint") {
@@ -116,16 +115,21 @@ export class PlantUMLGenerator {
             });
         }
     }
-
+    
     processTripleConstraint(expression, parentId) {
-        const attribute = `${expression.predicate}: ${expression.valueExpr.values.join(', ')}`;
+        let attribute = `${expression.predicate}`;
+        if (expression.valueExpr && expression.valueExpr.values && expression.valueExpr.values.length > 0) {
+            const values = expression.valueExpr.values.map(val => typeof val === 'string' ? val : val.value).join(', ');
+            attribute += `: ${values}`;
+        }
         this.output.push(`class Blank_${this.counterBlank} {\n${attribute}\n}`);
         if (parentId) {
             this.output.push(`${parentId} --> Blank_${this.counterBlank}`);
         }
         this.counterBlank++;
     }
-
+    
+    
     processEachOf(expression, parentId) {
         const uniqueId = `Blank_${this.counterBlank++}`;
         const attributes = expression.expressions.map(expr => {
