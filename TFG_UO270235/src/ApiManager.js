@@ -70,12 +70,10 @@ function processResult(result) {
         processed.start = jsonResult.start;
     }
     
-    // processed = extractIds(proocessed);
+    console.log(processed);
+
     const formattedResult = extractIds(processed);
     processed = obtainLogicShapes(formattedResult);
-    console.log("Processed:");
-    console.log(JSON.stringify(processed));
-
    
     return processed;
 }
@@ -91,9 +89,18 @@ function extractIds(json) {
     }
 
     function getLastSegment(url) {
-        const segments = url.split('/');
-        return segments[segments.length - 1];
+        // Separar la URL por '/' y obtener el último segmento
+        let segments = url.split('/');
+        let lastSegment = segments[segments.length - 1];
+    
+        if (lastSegment.includes('#')) {
+            segments = lastSegment.split('#');
+            lastSegment = segments[segments.length - 1];
+        }
+        
+        return lastSegment;
     }
+    
 
     for (let key in json) {
         if (typeof json[key] === 'string' && json[key].startsWith('http')) {

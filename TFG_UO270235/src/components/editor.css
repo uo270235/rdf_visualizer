@@ -90,11 +90,6 @@ h1 {
   max-height: 40rem; 
 } 
 
-
-.diagram-container svg {
-  max-width: 60%;
-}
-
 .mermaid-diagram{
   position: relative;
   min-width: 60%;

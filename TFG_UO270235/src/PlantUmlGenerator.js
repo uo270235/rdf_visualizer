@@ -52,10 +52,8 @@ export class PlantUMLGenerator {
             }
         }else{
             this.output.push(`class ${node.id} {}`);}
-            this.output.push("");  // Añadir una línea en blanco después de cada clase
 
             this.processNode(node, node.id);
-            this.output.push("");  // Añadir una línea en blanco después de cada procesamiento de nodo
         });
         this.output.push("@enduml");
         return this.output.join("\n");
@@ -144,11 +142,11 @@ export class PlantUMLGenerator {
     }
 
     extractAttributes(className) {
-        const regex = new RegExp(`class _?${className} \\{([^}]*)\\}`, 's');
+        const regex = new RegExp(`class (_?${className}_?|ex_${className}) \\{([^}]*)\\}`, 's');
         const match = this.umlText.match(regex);
-
-        if (match && match[1]) {
-            return match[1].trim();
+    
+        if (match && match[2]) {
+            return match[2].trim().split(';').map(attr => attr.trim()).join('\n');
         } else {
             return '';
         }

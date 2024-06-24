@@ -63,6 +63,7 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
     try {
       console.log("big ball of mud");
       console.log(json_api);
+      console.log(JSON.stringify(json_api));
       const generator = new PlantUMLGenerator(json_api, mermaidUML);
       const plantUMLCode = generator.generate(); 
       console.log("kroki source!!!!!!!!!!!!");
