@@ -18,7 +18,7 @@ body {
   height: 90%;
 }
 
-.page-title{
+.page-title {
   background-color: #1f425d;
   color: white;
   padding: 1rem;
@@ -55,7 +55,7 @@ h1 {
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
-.editor-buttons{
+.editor-buttons {
   text-align: right;
 }
 
@@ -76,7 +76,6 @@ h1 {
   background-color: #0056b3;
 }
 
-
 .diagram-container {
   position: relative;
 
@@ -86,25 +85,23 @@ h1 {
   border: 1px solid #ccc;
   padding: 10px;
   margin: 20px 0;
-  min-height: 40rem; 
-  max-height: 40rem; 
-} 
+  min-height: 40rem;
+  max-height: 40rem;
+}
 
-.mermaid-diagram{
+.mermaid-diagram {
   position: relative;
   min-width: 60%;
   max-width: 60%;
 }
 
-.only-mermaid{
+.only-mermaid {
   min-width: 100%;
   max-width: 100%;
-
 }
-.kroki-diagram{
+.kroki-diagram {
   min-width: 40%;
   max-width: 40%;
-
 }
 
 h2 {
@@ -127,29 +124,37 @@ pre {
 
 .result-container {
   display: flex;
-  gap: 10px;
   margin: auto;
   width: 80%;
   margin-bottom: 3rem;
 }
 
-.buttons-container{
+.buttons-container {
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
 }
 
 .download-icon {
-  position: absolute;
-  top: 10px !important;
-  right: 10px !important;
-  background: none;
+  background-color: #1f425d;
+  color: white;
+  border-radius: 0.5rem;
   border: none;
   cursor: pointer;
+  width: 3rem;
   font-size: 20px;
 }
 
+.download-icon:hover {
+  color: white;
+}
 
-.download-icon:hover {  
-  color: #007bff;
+.tools-container {
+  margin: auto;
+  margin-top: 4rem !important;
+  gap: 0.5rem;
+  display: flex;
+  flex-direction: row;
+  width: 80%;
+  justify-content: flex-end;
 }
