@@ -7,6 +7,7 @@ export class PlantUMLGenerator {
         this.counter = 0;
         this.counterBlank = 1;
         this.output = [];
+        this.processedClasses = new Set();
         this.initializeSkinParams();
     }
 
@@ -65,7 +66,10 @@ export class PlantUMLGenerator {
                 this.output.push(`class ${blankId} {}`);
                 this.output.push(`${parentId} --> ${blankId}`);
             } else {
-                this.output.push(`class ${node} {\n${this.extractAttributes(node)}\n}`);
+                if (!this.processedClasses.has(node)) {
+                    this.output.push(`class ${node} {\n${this.extractAttributes(node)}\n}`);
+                    this.processedClasses.add(node);
+                }
                 this.output.push(`${parentId} --> ${node}`);
             }
         } else if (node.type === "ShapeOr" || node.type === "ShapeAnd" || node.type === "ShapeNot") {
@@ -128,7 +132,6 @@ export class PlantUMLGenerator {
         }
         this.counterBlank++;
     }
-    
 
     processEachOf(expression, parentId) {
         const uniqueId = `Blank_${this.counterBlank++}`;
@@ -144,13 +147,12 @@ export class PlantUMLGenerator {
             }
             return '';
         }).filter(Boolean).join('\n');
-    
+
         this.output.push(`class ${uniqueId} {\n${attributes}\n}`);
         if (parentId) {
             this.output.push(`${parentId} --> ${uniqueId}`);
         }
     }
-    
 
     extractAttributes(className) {
         const regex = new RegExp(`class (_?${className}_?|ex_${className}) \\{([^}]*)\\}`, 's');
