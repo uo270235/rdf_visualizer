@@ -1,10 +1,3 @@
-/* .app{
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  text-align: center;
-} */
-
 .editor {
   text-align: left;
 }
@@ -25,7 +18,7 @@ nav {
   background: #1f425d;
   height: 80px;
   width: 100%;
-  text-align: center;
+  text-align: left;
 }
 label.logo {
   color: white;

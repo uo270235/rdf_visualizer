@@ -213,7 +213,7 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
                 }
               }}
             >
-              Ver Diagrama
+              Visualize
             </button>
           </div>
         </div>
