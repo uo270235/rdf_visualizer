@@ -286,7 +286,7 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 
         {(krokiSource || isMermaidDiagramVisible) && (
           <div className="tools-container">
-            <SearchBar />
+            {isMermaidDiagramVisible && <SearchBar />}
             <Tooltip
               title="Download Diagram(s)"
               open={tooltipOpen}
