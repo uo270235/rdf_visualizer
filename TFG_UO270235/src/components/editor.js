@@ -24,7 +24,7 @@ export function scrollToElement(id) {
   }
 }
 
-function Editor() {
+function Editor({ example }) {
   const editorRef = useRef(null);
   const [krokiSource, setKrokiSource] = useState('');
   const [parseError, setParseError] = useState(null);
@@ -36,11 +36,11 @@ function Editor() {
     download: false,
   });
 
-  const onExampleLoad = (example) => {
-    if (editorRef.current) {
+  useEffect(() => {
+    if (example && editorRef.current) {
       editorRef.current.setYasheValue(example);
     }
-  };
+  }, [example]);
 
   useEffect(() => {
     const yashes = document.querySelectorAll('.yashe');

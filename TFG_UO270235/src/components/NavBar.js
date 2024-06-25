@@ -15,9 +15,15 @@ const NavBar = ({ onExampleLoad }) => {
     setAnchorEl(null);
   };
 
-  const handleMenuItemClick = (example) => {
-    loadExample(example, onExampleLoad);
-    handleClose();
+  const handleMenuItemClick = async (example) => {
+    try {
+      const exampleContent = await loadExample(example);
+      onExampleLoad(exampleContent);
+    } catch (error) {
+      console.error('Error al cargar el ejemplo:', error);
+    } finally {
+      handleClose();
+    }
   };
 
   const open = Boolean(anchorEl);
