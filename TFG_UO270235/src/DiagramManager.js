@@ -48,7 +48,8 @@ export function highlightNode(prevNodeId, nodeId, color) {
   const svg = d3.select('svg[id^="mermaid-"]');
 
   if (prevNodeId != '') {
-    prevNodeId = prevNodeId.replace(/^:/, '\\:');
+    prevNodeId = prevNodeId.replace(/:/g, '\\:');
+
     let prevNode = svg.select(`#${prevNodeId} > rect.outer.title-state`);
     if (!prevNode.empty()) {
       prevNode.attr('style', `fill: ${'#ECECFF'} !important;`); // Cambio directo en el atributo de estilo
@@ -59,7 +60,7 @@ export function highlightNode(prevNodeId, nodeId, color) {
   }
 
   if (nodeId != '') {
-    nodeId = nodeId.replace(/^:/, '\\:');
+    nodeId = nodeId.replace(/:/g, '\\:');
 
     const node = svg.select(`#${nodeId} > rect.outer.title-state`);
     console.log(node);

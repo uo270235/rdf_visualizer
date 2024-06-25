@@ -198,7 +198,7 @@ PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
       </svg>
     `;
 
-    downloadDiagram(combinedSVG, 'combinedDiagram');
+    downloadDiagram(combinedSVG, 'RDFVisualizorDiagram');
   };
 
   const iconStyle = {
@@ -223,7 +223,9 @@ PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
           <h1 className="page-title" style={titleStyle}>
             Schema (ShEx)
             <Tooltip
-              title="Input some ShEx schema  to validate the schema and visualize it in UML diagrams."
+              title="Input some ShEx schema  to validate the schema and visualize it in UML diagrams.On the left side,
+               the logical shapes and starts will be displayed, while on the right side, all non-logical classes and 
+               their relationships will be shown."
               open={tooltipOpen.question}
               onOpen={() => handleTooltipOpen('question')}
               onClose={() => handleTooltipClose('question')}

@@ -67,9 +67,6 @@ const NavBar = ({ onExampleLoad }) => {
             <MenuItem onClick={() => handleMenuItemClick('example5')}>
               Example 5
             </MenuItem>
-            <MenuItem onClick={() => handleMenuItemClick('example6')}>
-              Example 6
-            </MenuItem>
           </Menu>
         </div>
       </nav>
