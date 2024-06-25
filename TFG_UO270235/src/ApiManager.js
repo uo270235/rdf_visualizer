@@ -37,6 +37,7 @@ export async function callApi(content) {
         // Parsear la respuesta JSON
         let result = await response.json();
         result = processResult(result);
+
         return result;
     } catch (error) {
         // Manejo de errores en la llamada fetch
@@ -54,29 +55,27 @@ export async function callApi(content) {
 function processResult(result) {
     const data = result.result.content;
     const jsonResult = JSON.parse(data);
-    console.log("DESDE NUESTRA API!!!!!!!!!!!!!");
-    console.log(JSON.stringify(jsonResult));
+
     let processed = {
         id: jsonResult.id,
         shapes: jsonResult.shapes.map(shape => ({
             id: shape.id,
             shapeExpr: shape.shapeExpr,
-        }))
+        })),
+        start:""
     };
-    // processed = extractIds(proocessed);
-    const formattedResult = extractIds(processed)
-    processed = obtainLogicShapes(formattedResult);
+
+    if (jsonResult.start) {
+        console.log("entra????");
+        processed.start = jsonResult.start;
+    }
     
-    console.log("Processed:");
-    console.log(JSON.stringify(processed));
-   
     console.log(processed);
-    const generator = new PlantUMLGenerator(processed);
-    const plantUMLCode = generator.generate();
-    console.log(JSON.stringify("PPPPPPPPPROCESAMIENTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO-------->UML"));
-    console.log(plantUMLCode);
-    
-    return plantUMLCode;
+
+    const formattedResult = extractIds(processed);
+    processed = obtainLogicShapes(formattedResult);
+   
+    return processed;
 }
 
 function extractIds(json) {
@@ -90,12 +89,24 @@ function extractIds(json) {
     }
 
     function getLastSegment(url) {
-        const segments = url.split('/');
-        return segments[segments.length - 1];
+        // Separar la URL por '/' y obtener el último segmento
+        let segments = url.split('/');
+        let lastSegment = segments[segments.length - 1];
+    
+        if (lastSegment.includes('#')) {
+            segments = lastSegment.split('#');
+            lastSegment = segments[segments.length - 1];
+        }
+        
+        return lastSegment;
     }
+    
 
     for (let key in json) {
         if (typeof json[key] === 'string' && json[key].startsWith('http')) {
+            json[key] = getLastSegment(json[key]);
+        } 
+        else if (typeof json[key] === 'string' && json[key].startsWith('file')) {
             json[key] = getLastSegment(json[key]);
         } else if (typeof json[key] === 'object' && json[key] !== null) {
             json[key] = extractIds(json[key]);
