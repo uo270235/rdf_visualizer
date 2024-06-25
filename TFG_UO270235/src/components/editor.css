@@ -116,7 +116,10 @@ h1 {
   min-width: 40%;
   max-width: 40%;
 }
-
+.only-kroki {
+  min-width: 100%;
+  max-width: 100%;
+}
 h2 {
   font-size: 22px;
   color: #333;

@@ -65,7 +65,6 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
   }, []);
 
   const recreateMermaid = async () => {
-    console.log('DEBERIA RECREARLO');
     const container = document.getElementById('mermaid-diagram-container');
     const oldMermaidDiagram = document.getElementById('mermaid-diagram');
     if (oldMermaidDiagram) {
@@ -78,13 +77,9 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 
   const createKroki = async (json_api, mermaidUML) => {
     try {
-      console.log('big ball of mud');
-      console.log(json_api);
-      console.log(JSON.stringify(json_api));
       const generator = new PlantUMLGenerator(json_api, mermaidUML);
       const plantUMLCode = generator.generate();
-      console.log('kroki source!!!!!!!!!!!!');
-      console.log(plantUMLCode);
+
       setKrokiSource(plantUMLCode);
       setParseError(null);
       if (json_api.length === 0) setKrokiSource('');
@@ -137,13 +132,19 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
       let source = yasheValue.replace(/\bnot\b/gi, 'NOT');
       let mermaidUML = shumlex.shexToUML('mermaid-diagram', source);
       shumlex.asignarEventos('mermaid-diagram');
-      setIsMermaidDiagramVisible(true);
-      return mermaidUML;
+
+      if (mermaidUML === 'classDiagram\n') {
+        clearMermaidDiagram();
+        console.log('Error en la generación del diagrama Mermaid jiji');
+      } else {
+        setIsMermaidDiagramVisible(true);
+        return mermaidUML;
+      }
     } catch (error) {
       console.error('Error al parsear ShEx:', error);
       setParseError(error.message);
       setKrokiSource('');
-      console.log('DESAPARECE 1');
+
       clearMermaidDiagram();
     }
   };
@@ -256,6 +257,8 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 
                   // Generación de Mermaid
                   let mermaidUML = createMermaid();
+                  console.log('caaa');
+                  console.log(mermaidUML);
 
                   // Generación de Kroki
                   createKroki(json_api, mermaidUML);
@@ -265,7 +268,7 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
                   console.error('Error al generar Plant UML:', error);
                   setParseError(error.message);
                   setKrokiSource('');
-                  console.log('DESAPARECE 2');
+
                   clearMermaidDiagram();
                 }
               }}
@@ -306,7 +309,13 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
         <div id="result-container" className="result-container">
           {krokiSource && (
             <div
-              className="diagram-container kroki-diagram"
+              className={
+                krokiSource
+                  ? isMermaidDiagramVisible
+                    ? 'diagram-container kroki-diagram'
+                    : 'diagram-container only-kroki'
+                  : ''
+              }
               data-zoom-on-wheel="zoom-amount: 0.01; min-scale: 0.3; max-scale: 20;"
               data-pan-on-drag
             >
