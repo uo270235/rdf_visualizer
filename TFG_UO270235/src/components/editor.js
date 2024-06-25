@@ -31,7 +31,10 @@ function Editor() {
   const [krokiSvg, setKrokiSvg] = useState('');
   const [isMermaidDiagramVisible, setIsMermaidDiagramVisible] = useState(false);
   const [isKrokiDiagramVisible, setIsKrokiDiagramVisible] = useState(false);
-  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [tooltipOpen, setTooltipOpen] = useState({
+    question: false,
+    download: false,
+  });
 
   const onExampleLoad = (example) => {
     if (editorRef.current) {
@@ -97,12 +100,12 @@ PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
     }
   };
 
-  const handleTooltipOpen = () => {
-    setTooltipOpen(true);
+  const handleTooltipOpen = (tooltipName) => {
+    setTooltipOpen((prevState) => ({ ...prevState, [tooltipName]: true }));
   };
 
-  const handleTooltipClose = () => {
-    setTooltipOpen(false);
+  const handleTooltipClose = (tooltipName) => {
+    setTooltipOpen((prevState) => ({ ...prevState, [tooltipName]: false }));
   };
 
   const downloadDiagram = (svgContent, filename) => {
@@ -221,14 +224,14 @@ PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
             Schema (ShEx)
             <Tooltip
               title="Input some ShEx schema  to validate the schema and visualize it in UML diagrams."
-              open={tooltipOpen}
-              onOpen={handleTooltipOpen}
-              onClose={handleTooltipClose}
+              open={tooltipOpen.question}
+              onOpen={() => handleTooltipOpen('question')}
+              onClose={() => handleTooltipClose('question')}
               arrow
             >
               <div
-                onMouseEnter={handleTooltipOpen}
-                onMouseLeave={handleTooltipClose}
+                onMouseEnter={() => handleTooltipOpen('question')}
+                onMouseLeave={() => handleTooltipClose('question')}
               >
                 <FaQuestion style={iconStyle} />
               </div>
@@ -285,16 +288,16 @@ PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
             {isMermaidDiagramVisible && <SearchBar />}
             <Tooltip
               title="Download Diagram(s)"
-              open={tooltipOpen}
-              onOpen={handleTooltipOpen}
-              onClose={handleTooltipClose}
+              open={tooltipOpen.download}
+              onOpen={() => handleTooltipOpen('download')}
+              onClose={() => handleTooltipClose('download')}
               arrow
             >
               <button
                 className="download-icon"
                 onClick={combineSVGs}
-                onMouseEnter={handleTooltipOpen}
-                onMouseLeave={handleTooltipClose}
+                onMouseEnter={() => handleTooltipOpen('download')}
+                onMouseLeave={() => handleTooltipClose('download')}
               >
                 <FaDownload />
               </button>
