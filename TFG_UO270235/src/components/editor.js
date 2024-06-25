@@ -4,7 +4,7 @@ import EditorYashe from './yashe';
 import shumlex from 'shumlex';
 import Diagram from './Diagram';
 import Alerta from './Alerta';
-import { FaDownload } from 'react-icons/fa';
+import { FaDownload, FaQuestion } from 'react-icons/fa';
 import { callApi } from '../ApiManager';
 import { PlantUMLGenerator } from '../PlantUmlGenerator';
 import SearchBar from './SearchBar';
@@ -201,11 +201,42 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
     downloadDiagram(combinedSVG, 'combinedDiagram');
   };
 
+  const iconStyle = {
+    backgroundColor: 'white',
+    color: '#1f425d',
+    borderRadius: '0.2rem',
+    padding: '0.1rem',
+    marginLeft: '1rem',
+    width: '1.15rem',
+    height: '1.15rem',
+  };
+
+  const titleStyle = {
+    display: 'flex',
+    alignItems: 'center',
+  };
+
   return (
     <>
       <div className="container">
         <div className="editor">
-          <h1 className="page-title">Schema (ShEx)</h1>
+          <h1 className="page-title" style={titleStyle}>
+            Schema (ShEx)
+            <Tooltip
+              title="Input some ShEx schema  to validate the schema and visualize it in UML diagrams."
+              open={tooltipOpen}
+              onOpen={handleTooltipOpen}
+              onClose={handleTooltipClose}
+              arrow
+            >
+              <div
+                onMouseEnter={handleTooltipOpen}
+                onMouseLeave={handleTooltipClose}
+              >
+                <FaQuestion style={iconStyle} />
+              </div>
+            </Tooltip>
+          </h1>
           <EditorYashe ref={editorRef} />
           <div className="editor-buttons">
             <button
@@ -250,25 +281,27 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
           />
         )}
 
-        <div className="tools-container">
-          <SearchBar />
-          <Tooltip
-            title="Download Diagram(s)"
-            open={tooltipOpen}
-            onOpen={handleTooltipOpen}
-            onClose={handleTooltipClose}
-            arrow
-          >
-            <button
-              className="download-icon"
-              onClick={combineSVGs}
-              onMouseEnter={handleTooltipOpen}
-              onMouseLeave={handleTooltipClose}
+        {(krokiSource || isMermaidDiagramVisible) && (
+          <div className="tools-container">
+            <SearchBar />
+            <Tooltip
+              title="Download Diagram(s)"
+              open={tooltipOpen}
+              onOpen={handleTooltipOpen}
+              onClose={handleTooltipClose}
+              arrow
             >
-              <FaDownload />
-            </button>
-          </Tooltip>
-        </div>
+              <button
+                className="download-icon"
+                onClick={combineSVGs}
+                onMouseEnter={handleTooltipOpen}
+                onMouseLeave={handleTooltipClose}
+              >
+                <FaDownload />
+              </button>
+            </Tooltip>
+          </div>
+        )}
 
         <div id="result-container" className="result-container">
           {krokiSource && (

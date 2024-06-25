@@ -58,15 +58,17 @@ export function highlightNode(prevNodeId, nodeId, color) {
     }
   }
 
-  nodeId = nodeId.replace(/^:/, '\\:');
+  if (nodeId != '') {
+    nodeId = nodeId.replace(/^:/, '\\:');
 
-  const node = svg.select(`#${nodeId} > rect.outer.title-state`);
-  console.log(node);
-  if (!node.empty()) {
-    node.attr('style', `fill: ${color} !important;`); // Cambio directo en el atributo de estilo
-    console.log('Color cambiado a ' + color + ' en el nodo: ' + nodeId);
-  } else {
-    console.log('Nodo no encontrado: ' + nodeId);
+    const node = svg.select(`#${nodeId} > rect.outer.title-state`);
+    console.log(node);
+    if (!node.empty()) {
+      node.attr('style', `fill: ${color} !important;`); // Cambio directo en el atributo de estilo
+      console.log('Color cambiado a ' + color + ' en el nodo: ' + nodeId);
+    } else {
+      console.log('Nodo no encontrado: ' + nodeId);
+    }
   }
 }
 

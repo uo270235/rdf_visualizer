@@ -18,6 +18,19 @@ body {
   height: 90%;
 }
 
+.editor-title {
+  display: flex;
+  flex-direction: row;
+}
+
+.question-icon {
+  background-color: white;
+  color: #1f425d;
+  border-radius: 0.2rem;
+  padding: 0.1rem;
+  margin-left: 1rem;
+}
+
 .page-title {
   background-color: #1f425d;
   color: white;
