@@ -1,4 +1,3 @@
 {
-    "shex": "prefix wd: <http://www.wikidata.org/entity/>\nprefix wdt: <http://www.wikidata.org/prop/direct/>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n\nstart = @<city> OR @<human>\n\n<city> EXTRA wdt:P31 {\n    rdfs:label [ @en ] ;\n    wdt:P31 [ wd:Q515 ]\n}\n\n<human> EXTRA wdt:P31 {\n    rdfs:label [ @en ] ;\n    wdt:P31 [ wd:Q5 ] ;\n    wdt:P19 @<BirthPlace>\n}\n\n<BirthPlace> {\n    rdfs:label [ @en ]\n}"
-  }
-  
+  "shex": "prefix wd: <http://www.wikidata.org/entity/>\nprefix wdt: <http://www.wikidata.org/prop/direct/>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n\nstart = @<city> OR @<human>\n\n<city> EXTRA wdt:P31 {\n    rdfs:label [ @en ] ;\n    wdt:P31 [ wd:Q515 ]\n}\n\n<human> EXTRA wdt:P31 {\n    rdfs:label [ @en ] ;\n    wdt:P31 [ wd:Q5 ] ;\n    wdt:P19 @<BirthPlace>\n}\n\n<BirthPlace> {\n    rdfs:label [ @en ]\n}"
+}

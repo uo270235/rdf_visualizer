@@ -33,31 +33,27 @@ function Editor() {
   const [isKrokiDiagramVisible, setIsKrokiDiagramVisible] = useState(false);
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
+  const onExampleLoad = (example) => {
+    if (editorRef.current) {
+      editorRef.current.setYasheValue(example);
+    }
+  };
+
   useEffect(() => {
     const yashes = document.querySelectorAll('.yashe');
     if (yashes.length > 1) {
       yashes[0].remove();
     }
     setTimeout(() => {
-      const example = `prefix : <http://example.org/>
-prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+      const example = `PREFIX :       <http://example.org/>
+PREFIX schema: <http://schema.org/>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
 
-:Usuario :Hombre OR :Mujer AND NOT {:lolo[] } 
-
-:Hombre {
-  :genero [ :Masculino ];
-  :mascota @:Perro *;
-  :mujer @:Mujer;
-}
-
-:Mujer {
-  :genero [ :Femenino ];
-  :marido @:Hombre ; 
-  :mascota @:Perro *
-}
-
-:Perro {
-  :capacidad [ :ladrar ]
+:User {
+  schema:name          xsd:string ;
+  schema:birthDate     xsd:date?  ;
+  schema:gender        [ schema:Male schema:Female ] OR xsd:string ;
+  schema:knows         IRI @:User*
 }
 `;
       editorRef.current.setYasheValue(example);
