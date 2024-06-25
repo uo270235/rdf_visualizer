@@ -8,6 +8,21 @@ import { FaDownload } from 'react-icons/fa';
 import { callApi } from '../ApiManager';
 import { PlantUMLGenerator } from '../PlantUmlGenerator';
 import SearchBar from './SearchBar';
+import Tooltip from '@mui/material/Tooltip';
+
+export function scrollToElement(id) {
+  const element = document.getElementById(id);
+  if (element) {
+    const elementRect = element.getBoundingClientRect();
+    const viewportHeight =
+      window.innerHeight || document.documentElement.clientHeight;
+    const scrollY = elementRect.top + window.pageYOffset - viewportHeight / 2;
+    element.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    });
+  }
+}
 
 function Editor() {
   const editorRef = useRef(null);
@@ -16,6 +31,7 @@ function Editor() {
   const [krokiSvg, setKrokiSvg] = useState('');
   const [isMermaidDiagramVisible, setIsMermaidDiagramVisible] = useState(false);
   const [isKrokiDiagramVisible, setIsKrokiDiagramVisible] = useState(false);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
 
   useEffect(() => {
     const yashes = document.querySelectorAll('.yashe');
@@ -88,6 +104,14 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
       mermaidContainer.innerHTML = '';
       setIsMermaidDiagramVisible(false);
     }
+  };
+
+  const handleTooltipOpen = () => {
+    setTooltipOpen(true);
+  };
+
+  const handleTooltipClose = () => {
+    setTooltipOpen(false);
   };
 
   const downloadDiagram = (svgContent, filename) => {
@@ -204,6 +228,8 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
 
                   // Generación de Kroki
                   createKroki(json_api, mermaidUML);
+
+                  scrollToElement('result-container');
                 } catch (error) {
                   console.error('Error al generar Plant UML:', error);
                   setParseError(error.message);
@@ -225,12 +251,26 @@ prefix xsd: <http://www.w3.org/2001/XMLSchema#>
         )}
 
         <div className="tools-container">
-          <SearchBar></SearchBar>
-          <button className="download-icon" onClick={combineSVGs}>
-            <FaDownload />
-          </button>
+          <SearchBar />
+          <Tooltip
+            title="Download Diagram(s)"
+            open={tooltipOpen}
+            onOpen={handleTooltipOpen}
+            onClose={handleTooltipClose}
+            arrow
+          >
+            <button
+              className="download-icon"
+              onClick={combineSVGs}
+              onMouseEnter={handleTooltipOpen}
+              onMouseLeave={handleTooltipClose}
+            >
+              <FaDownload />
+            </button>
+          </Tooltip>
         </div>
-        <div className="result-container">
+
+        <div id="result-container" className="result-container">
           {krokiSource && (
             <div
               className="diagram-container kroki-diagram"
