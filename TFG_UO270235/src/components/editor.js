@@ -50,6 +50,7 @@ function Editor({ example }) {
     question: false,
     download: false,
   });
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     if (example && editorRef.current) {
@@ -324,9 +325,9 @@ PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
                   // Generación de Kroki
                   createKroki(json_api, mermaidUML);
 
-                  scrollToElement('result-container');
+                  setSearchTerm('');
 
-                  if ($('#searchbar')) $('#searchbar').val('');
+                  scrollToElement('result-container');
                 } catch (error) {
                   console.error('Error al generar Plant UML:', error);
                   setParseError(error.message);
@@ -349,7 +350,12 @@ PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
 
         {(krokiSource || isMermaidDiagramVisible) && (
           <div className="tools-container">
-            {isMermaidDiagramVisible && <SearchBar />}
+            {isMermaidDiagramVisible && (
+              <SearchBar
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+              />
+            )}
             <Tooltip
               title="Download Diagram(s)"
               open={tooltipOpen.download}

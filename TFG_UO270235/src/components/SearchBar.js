@@ -1,40 +1,15 @@
-/**
- * @module components/SearchBar
- */
-import React, { useState } from 'react';
+import { useState } from 'react';
+import React from 'react';
 import { clickToNode, highlightNode } from '../DiagramManager';
 import { IoSearch } from 'react-icons/io5';
 
-/**
- * Barra de búsqueda para buscar nodos en el diagrama.
- * @param {object} props - Las propiedades del componente.
- * @param {function} props.onSearch - Función a ejecutar cuando se realiza una búsqueda.
- * @returns {JSX.Element} El componente SearchBar.
- */
-function SearchBar({ onSearch }) {
-  /**
-   * @constant {string} searchTerm - El término de búsqueda ingresado por el usuario.
-   */
-  const [searchTerm, setSearchTerm] = useState('');
-
-  /**
-   * @constant {string} prevShape - El término de búsqueda previo.
-   */
+function SearchBar({ searchTerm, setSearchTerm, onSearch }) {
   const [prevShape, setPrevShape] = useState('');
 
-  /**
-   * Maneja el cambio en el input de búsqueda.
-   * @param {object} event - El evento de cambio.
-   * @constant {object} handleInputChange
-   */
   const handleInputChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  /**
-   * Maneja la acción de búsqueda.
-   * @constant {object} handleSearch
-   */
   const handleSearch = () => {
     highlightNode(prevShape, searchTerm, '#fff250');
     setPrevShape(searchTerm);
@@ -54,7 +29,7 @@ function SearchBar({ onSearch }) {
         onChange={handleInputChange}
       />
       <button type="submit" className="searchButton" onClick={handleSearch}>
-        <IoSearch></IoSearch>
+        <IoSearch />
       </button>
     </div>
   );
