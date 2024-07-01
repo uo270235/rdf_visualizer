@@ -1,20 +1,44 @@
+/**
+ * @module components/NavBar
+ */
 import React, { useState } from 'react';
 import { loadExample } from '../ExamplesManager';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
+/**
+ * Componente de barra de navegación.
+ * @param {object} props - Las propiedades del componente.
+ * @param {function} props.onExampleLoad - Función llamada cuando se carga un ejemplo.
+ * @returns {JSX.Element} El componente NavBar.
+ * @constant NavBar
+ */
 const NavBar = ({ onExampleLoad }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
+  /**
+   * Maneja el clic en el botón del menú.
+   * @param {object} event - El evento de clic.
+   * @constant handleClick
+   */
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
+  /**
+   * Cierra el menú.
+   * @constant handleClose
+   */
   const handleClose = () => {
     setAnchorEl(null);
   };
 
+  /**
+   * Maneja el clic en un elemento del menú.
+   * @param {string} example - El ejemplo a cargar.
+   * @constant handleMenuItemClick
+   */
   const handleMenuItemClick = async (example) => {
     try {
       const exampleContent = await loadExample(example);
