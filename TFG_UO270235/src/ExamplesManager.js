@@ -1,16 +1,11 @@
-/**
- * @module managers/ExamplesManager
- */
-
-/**
- * Carga un ejemplo desde un archivo JSON.
- * @param {string} example - El nombre del ejemplo a cargar.
- * @returns {Promise<string>} - Una promesa que resuelve con el contenido de ShEx.
- * @throws {Error} - Lanza un error si no se puede cargar el archivo JSON.
- */
 export async function loadExample(example) {
   try {
-    const response = await fetch(`static/${example}.json`);
+    const response = await fetch(
+      `${process.env.PUBLIC_URL}/static/${example}.json`,
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
     const data = await response.json();
     return data.shex;
   } catch (error) {
