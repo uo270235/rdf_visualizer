@@ -10,7 +10,7 @@ class PlantUMLGenerator {
    * @param {string} umlText - El texto UML inicial.
    */
   constructor(json, umlText) {
-    //console.log(JSON.stringify(json));
+    console.log(JSON.stringify(json));
     this.json = json;
     this.umlText = umlText;
     this.counter = 0;
@@ -122,17 +122,14 @@ class PlantUMLGenerator {
         this.output.push(`${id} --> ${blankId}`);
       }
     } else if (node.type === 'NodeConstraint') {
-      const className = node.datatype || 'NodeConstraint';
-      const uniqueClassName = `${className}_${uniqid()}`;
+      const uniqueClassName = `Blank_${this.counterBlank++}`;
       if (node.values && node.values.length > 0) {
         const values = node.values
           .map((val) => (typeof val === 'string' ? val : val.value))
           .join(', ');
-        this.output.push(
-          `class "${className}" as ${uniqueClassName} {\nvalues: ${values}\n}`,
-        );
+        this.output.push(`class "${uniqueClassName}" {\nvalues: ${values}\n}`);
       } else {
-        this.output.push(`class "${className}" as ${uniqueClassName} {}`);
+        this.output.push(`class "${uniqueClassName}" {}`);
       }
       if (parentId) {
         this.output.push(`${parentId} --> ${uniqueClassName}`);
@@ -157,20 +154,65 @@ class PlantUMLGenerator {
    */
   processTripleConstraint(expression, parentId) {
     let attribute = `:${expression.predicate} [ `;
+    let attributeId = `${expression.predicate}_value`;
+    if (expression.valueExpr) {
+      if (
+        expression.valueExpr.type === 'NodeConstraint' &&
+        expression.valueExpr.values
+      ) {
+        const values = expression.valueExpr.values
+          .map((val) => (typeof val === 'string' ? `:${val}` : val.value))
+          .join(', ');
+        attribute += `${values} ]`;
+        attributeId = `:${expression.predicate} [ ${values} ]`;
+      } else if (expression.valueExpr.type) {
+        if (
+          expression.valueExpr.type === 'ShapeAnd' ||
+          expression.valueExpr.type === 'ShapeOr'
+        ) {
+          const nestedNodeId = `${expression.valueExpr.type.toUpperCase()}_${uniqid()}`;
+          this.output.push(
+            `component [ ] as ${nestedNodeId} <<${expression.valueExpr.type
+              .replace('Shape', '')
+              .toUpperCase()}>>`,
+          );
+          this.output.push(`${attributeId} *--> ${nestedNodeId}`);
+          if (Array.isArray(expression.valueExpr.shapeExprs)) {
+            expression.valueExpr.shapeExprs.forEach((child) => {
+              this.processNode(child, nestedNodeId);
+            });
+          }
+          attribute += `${expression.predicate}_value ]`;
+        } else if (expression.valueExpr.type === 'ShapeNot') {
+          const notNodeId = `NOT_${uniqid()}`;
+          this.output.push(`component [ ] as ${notNodeId} <<NOT>>`);
+          this.output.push(`${attributeId} --> ${notNodeId}`);
+          this.processNode(expression.valueExpr.shapeExpr, notNodeId);
+          attribute += `${attributeId} ]`;
+        } else {
+          const nestedNodeId = `Nested_${uniqid()}`;
+          this.processNode(expression.valueExpr, nestedNodeId);
+          attributeId = `:${expression.predicate} [ ${nestedNodeId} ]`;
+          attribute += `${nestedNodeId} ]`;
+        }
+      }
+    } else {
+      attribute += ']';
+      attributeId = `:${expression.predicate} [ ]`;
+    }
+
+    const blankId = `Blank_${this.counterBlank}`;
+    this.output.push(`class ${blankId} {\n${attribute}\n}`);
+    if (parentId) {
+      this.output.push(`${parentId} --> ${blankId}`);
+    }
     if (
       expression.valueExpr &&
-      expression.valueExpr.values &&
-      expression.valueExpr.values.length > 0
+      (expression.valueExpr.type === 'ShapeAnd' ||
+        expression.valueExpr.type === 'ShapeOr' ||
+        expression.valueExpr.type === 'ShapeNot')
     ) {
-      const values = expression.valueExpr.values
-        .map((val) => (typeof val === 'string' ? `:${val}` : val.value))
-        .join(', ');
-      attribute += `${values}`;
-    }
-    attribute += ' ]';
-    this.output.push(`class Blank_${this.counterBlank} {\n${attribute}\n}`);
-    if (parentId) {
-      this.output.push(`${parentId} --> Blank_${this.counterBlank}`);
+      this.output.push(`${blankId} --> ${expression.predicate}_value`);
     }
     this.counterBlank++;
   }
@@ -186,28 +228,66 @@ class PlantUMLGenerator {
       .map((expr) => {
         if (expr.type === 'TripleConstraint') {
           let attribute = `:${expr.predicate} [ `;
-          if (
-            expr.valueExpr &&
-            expr.valueExpr.values &&
-            expr.valueExpr.values.length > 0
-          ) {
-            const values = expr.valueExpr.values
-              .map((val) => (typeof val === 'string' ? `:${val}` : val.value))
-              .join(', ');
-            attribute += `${values}`;
+          let attributeId = `${expr.predicate}_value`;
+          if (expr.valueExpr) {
+            if (
+              expr.valueExpr.type === 'NodeConstraint' &&
+              expr.valueExpr.values
+            ) {
+              const values = expr.valueExpr.values
+                .map((val) => (typeof val === 'string' ? `:${val}` : val.value))
+                .join(', ');
+              attribute += `${values} ]`;
+            } else if (expr.valueExpr.type) {
+              if (
+                expr.valueExpr.type === 'ShapeAnd' ||
+                expr.valueExpr.type === 'ShapeOr'
+              ) {
+                const nestedNodeId = `${expr.valueExpr.type.toUpperCase()}_${uniqid()}`;
+                this.output.push(
+                  `component [ ] as ${nestedNodeId} <<${expr.valueExpr.type
+                    .replace('Shape', '')
+                    .toUpperCase()}>>`,
+                );
+                this.output.push(`${attributeId} *--> ${nestedNodeId}`);
+                if (Array.isArray(expr.valueExpr.shapeExprs)) {
+                  expr.valueExpr.shapeExprs.forEach((child) => {
+                    this.processNode(child, nestedNodeId);
+                  });
+                }
+                attribute += `${expr.predicate}_value ]`;
+              } else if (expr.valueExpr.type === 'ShapeNot') {
+                const notNodeId = `NOT_${uniqid()}`;
+                this.output.push(`component [ ] as ${notNodeId} <<NOT>>`);
+                this.output.push(`${attributeId} --> ${notNodeId}`);
+                this.processNode(expr.valueExpr.shapeExpr, notNodeId);
+                attribute += `${attributeId} ]`;
+              } else {
+                const nestedNodeId = `Nested_${uniqid()}`;
+                this.processNode(expr.valueExpr, nestedNodeId);
+                attribute += `${nestedNodeId} ]`;
+              }
+            }
+          } else {
+            attribute += ']';
           }
-          attribute += ' ]';
-          return attribute;
+          return { attribute, attributeId };
         }
-        return '';
+        return null;
       })
-      .filter(Boolean)
-      .join('\n');
+      .filter(Boolean);
 
-    this.output.push(`class ${uniqueId} {\n${attributes}\n}`);
+    const attributeString = attributes.map((attr) => attr.attribute).join('\n');
+    this.output.push(`class ${uniqueId} {\n${attributeString}\n}`);
     if (parentId) {
       this.output.push(`${parentId} --> ${uniqueId}`);
     }
+
+    // attributes.forEach((attr) => {
+    //   if (attr.attributeId.startsWith('capacidad')) {
+    //     this.output.push(`${uniqueId} *--> ${attr.attributeId}`);
+    //   }
+    // });
   }
 
   /**
@@ -233,4 +313,5 @@ class PlantUMLGenerator {
     }
   }
 }
+
 module.exports = { PlantUMLGenerator };
