@@ -3,14 +3,14 @@ const uniqid = require('uniqid');
 /**
  * Clase para generar PlantUML a partir de JSON y UML.
  */
-export class PlantUMLGenerator {
+class PlantUMLGenerator {
   /**
    * Crea una instancia de PlantUMLGenerator.
    * @param {Object} json - El JSON que representa las formas.
    * @param {string} umlText - El texto UML inicial.
    */
   constructor(json, umlText) {
-    console.log(JSON.stringify(json));
+    //console.log(JSON.stringify(json));
     this.json = json;
     this.umlText = umlText;
     this.counter = 0;
@@ -233,3 +233,4 @@ export class PlantUMLGenerator {
     }
   }
 }
+module.exports = { PlantUMLGenerator };
