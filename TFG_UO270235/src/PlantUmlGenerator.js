@@ -122,17 +122,19 @@ class PlantUMLGenerator {
         this.output.push(`${id} --> ${blankId}`);
       }
     } else if (node.type === 'NodeConstraint') {
-      const uniqueClassName = `Blank_${this.counterBlank++}`;
+      const className = node.datatype
+        ? this.extractClassName(node.datatype)
+        : `Blank_${this.counterBlank++}`;
       if (node.values && node.values.length > 0) {
         const values = node.values
           .map((val) => (typeof val === 'string' ? val : val.value))
           .join(', ');
-        this.output.push(`class "${uniqueClassName}" {\nvalues: ${values}\n}`);
+        this.output.push(`class "${className}" {\nvalues: ${values}\n}`);
       } else {
-        this.output.push(`class "${uniqueClassName}" {}`);
+        this.output.push(`class "${className}" {}`);
       }
       if (parentId) {
-        this.output.push(`${parentId} --> ${uniqueClassName}`);
+        this.output.push(`${parentId} --> ${className}`);
       }
     } else if (node.type === 'Shape' && node.expression) {
       if (node.expression.type === 'TripleConstraint') {
@@ -176,7 +178,7 @@ class PlantUMLGenerator {
               .replace('Shape', '')
               .toUpperCase()}>>`,
           );
-          this.output.push(`${attributeId} *--> ${nestedNodeId}`);
+          this.output.push(`${attributeId} --> ${nestedNodeId}`);
           if (Array.isArray(expression.valueExpr.shapeExprs)) {
             expression.valueExpr.shapeExprs.forEach((child) => {
               this.processNode(child, nestedNodeId);
@@ -212,7 +214,7 @@ class PlantUMLGenerator {
         expression.valueExpr.type === 'ShapeOr' ||
         expression.valueExpr.type === 'ShapeNot')
     ) {
-      this.output.push(`${blankId} --> ${expression.predicate}_value`);
+      // this.output.push(`${blankId} --> ${expression.predicate}_value`);
     }
     this.counterBlank++;
   }
@@ -249,7 +251,7 @@ class PlantUMLGenerator {
                     .replace('Shape', '')
                     .toUpperCase()}>>`,
                 );
-                this.output.push(`${attributeId} *--> ${nestedNodeId}`);
+                this.output.push(`${attributeId} --> ${nestedNodeId}`);
                 if (Array.isArray(expr.valueExpr.shapeExprs)) {
                   expr.valueExpr.shapeExprs.forEach((child) => {
                     this.processNode(child, nestedNodeId);
@@ -311,6 +313,16 @@ class PlantUMLGenerator {
     } else {
       return '';
     }
+  }
+
+  /**
+   * Extrae el nombre simple de una URI.
+   * @param {string} uri - La URI.
+   * @returns {string} - El nombre simple.
+   */
+  extractClassName(uri) {
+    const parts = uri.split('#');
+    return parts.length > 1 ? parts[1] : parts[0];
   }
 }
 
