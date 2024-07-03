@@ -14,7 +14,9 @@ const App = () => {
   return (
     <div className="App">
       <NavBar onExampleLoad={handleExampleLoad} />
-      <Editor example={exampleContent} />
+      <div className="editor" id="editor-container">
+        <Editor example={exampleContent} />
+      </div>
     </div>
   );
 };

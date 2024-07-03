@@ -304,6 +304,7 @@ PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
           <EditorYashe ref={editorRef} />
           <div className="editor-buttons">
             <button
+              id="visualize-button"
               className="button-20"
               onClick={async () => {
                 const yasheValue = editorRef.current.getYasheValue();
@@ -364,6 +365,7 @@ PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
               arrow
             >
               <button
+                id="download-button"
                 className="download-icon"
                 onClick={combineSVGs}
                 onMouseEnter={() => handleTooltipOpen('download')}

@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from 'react';
 import YASHE from 'yashe';
 
 const EditorYashe = forwardRef((props, ref) => {
@@ -10,8 +16,8 @@ const EditorYashe = forwardRef((props, ref) => {
       return yashe ? yashe.getValue() : '';
     },
     setYasheValue: (value) => {
-       if(yashe) yashe.setValue(value);
-    }
+      if (yashe) yashe.setValue(value);
+    },
   }));
 
   useEffect(() => {
@@ -27,7 +33,7 @@ const EditorYashe = forwardRef((props, ref) => {
     }
   }, [yashe]);
 
-  return <div ref={divRef} />;
+  return <div ref={divRef} id="yashe-editor" />;
 });
 
 export default EditorYashe;

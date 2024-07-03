@@ -10,6 +10,7 @@ export class PlantUMLGenerator {
    * @param {string} umlText - El texto UML inicial.
    */
   constructor(json, umlText) {
+    console.log(JSON.stringify(json));
     this.json = json;
     this.umlText = umlText;
     this.counter = 0;

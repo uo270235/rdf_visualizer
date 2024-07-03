@@ -76,19 +76,34 @@ const NavBar = ({ onExampleLoad }) => {
               'aria-labelledby': 'basic-button',
             }}
           >
-            <MenuItem onClick={() => handleMenuItemClick('example1')}>
+            <MenuItem
+              id="example-1"
+              onClick={() => handleMenuItemClick('example1')}
+            >
               Example 1
             </MenuItem>
-            <MenuItem onClick={() => handleMenuItemClick('example2')}>
+            <MenuItem
+              id="example-2"
+              onClick={() => handleMenuItemClick('example2')}
+            >
               Example 2
             </MenuItem>
-            <MenuItem onClick={() => handleMenuItemClick('example3')}>
+            <MenuItem
+              id="example-3"
+              onClick={() => handleMenuItemClick('example3')}
+            >
               Example 3
             </MenuItem>
-            <MenuItem onClick={() => handleMenuItemClick('example4')}>
+            <MenuItem
+              id="example-4"
+              onClick={() => handleMenuItemClick('example4')}
+            >
               Example 4
             </MenuItem>
-            <MenuItem onClick={() => handleMenuItemClick('example5')}>
+            <MenuItem
+              id="example-5"
+              onClick={() => handleMenuItemClick('example5')}
+            >
               Example 5
             </MenuItem>
           </Menu>
