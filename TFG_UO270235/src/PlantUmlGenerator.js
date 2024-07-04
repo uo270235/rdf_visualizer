@@ -11,7 +11,7 @@ class PlantUMLGenerator {
    */
   constructor(json, umlText) {
     this.umlText = '';
-    console.log(JSON.stringify(json));
+    //console.log(JSON.stringify(json));
     this.json = json;
     if (umlText != undefined) this.umlText = umlText;
     this.counter = 0;

@@ -2,9 +2,11 @@ import { useState } from 'react';
 import React from 'react';
 import { clickToNode, highlightNode } from '../DiagramManager';
 import { IoSearch } from 'react-icons/io5';
+import Tooltip from '@mui/material/Tooltip';
 
 function SearchBar({ searchTerm, setSearchTerm, onSearch }) {
   const [prevShape, setPrevShape] = useState('');
+  const [tooltipOpen, setTooltipOpen] = useState(false);
 
   const handleInputChange = (event) => {
     setSearchTerm(event.target.value);
@@ -18,6 +20,14 @@ function SearchBar({ searchTerm, setSearchTerm, onSearch }) {
     }
   };
 
+  const handleTooltipOpen = () => {
+    setTooltipOpen(true);
+  };
+
+  const handleTooltipClose = () => {
+    setTooltipOpen(false);
+  };
+
   return (
     <div className="search">
       <input
@@ -28,9 +38,17 @@ function SearchBar({ searchTerm, setSearchTerm, onSearch }) {
         value={searchTerm}
         onChange={handleInputChange}
       />
-      <button type="submit" className="searchButton" onClick={handleSearch}>
-        <IoSearch />
-      </button>
+      <Tooltip
+        title="If the class has this syntax <ExampleClass>, search  ex:ExampleClass . If it has this syntax :ExampleClass, search using :ExampleClass."
+        open={tooltipOpen}
+        onOpen={() => handleTooltipOpen()}
+        onClose={() => handleTooltipClose()}
+        arrow
+      >
+        <button type="submit" className="searchButton" onClick={handleSearch}>
+          <IoSearch />
+        </button>
+      </Tooltip>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { loadExample } from '../ExamplesManager';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Tooltip from '@mui/material/Tooltip';
 
 /**
  * Componente de barra de navegación.
@@ -105,6 +106,12 @@ const NavBar = ({ onExampleLoad }) => {
               onClick={() => handleMenuItemClick('example5')}
             >
               Example 5
+            </MenuItem>
+            <MenuItem
+              id="example-6"
+              onClick={() => handleMenuItemClick('example6')}
+            >
+              Example 6
             </MenuItem>
           </Menu>
         </div>

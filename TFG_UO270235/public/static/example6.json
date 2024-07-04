@@ -1,0 +1,3 @@
+{
+  "shex": "prefix : <http://example.org/>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\n\n:condiciones {:asistencia_minima [:80]} and {:nota_minima {:laboratorio [:5]} or {:teoria [:5]} }\n\n:evaluacion {:nota []} and {:asistencia []}\n\n:asignatura @:condiciones and :evaluacion\n\n:Alumno {\n  :nombre xsd:string;\n  :uo xsd:integer ;\n  :tiene @:asignatura *; \n  :pertenece @:grado\n}\n\n:grado {\n :nombre xsd:string;\n}"
+}
