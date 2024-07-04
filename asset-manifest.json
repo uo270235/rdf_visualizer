@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/rdf_visualizer/static/css/main.f5e75be1.chunk.css",
-    "main.js": "/rdf_visualizer/static/js/main.30928dd6.chunk.js",
-    "main.js.map": "/rdf_visualizer/static/js/main.30928dd6.chunk.js.map",
+    "main.js": "/rdf_visualizer/static/js/main.bea41738.chunk.js",
+    "main.js.map": "/rdf_visualizer/static/js/main.bea41738.chunk.js.map",
     "runtime-main.js": "/rdf_visualizer/static/js/runtime-main.77285c2e.js",
     "runtime-main.js.map": "/rdf_visualizer/static/js/runtime-main.77285c2e.js.map",
     "static/js/2.bf9c56af.chunk.js": "/rdf_visualizer/static/js/2.bf9c56af.chunk.js",
@@ -12,13 +12,13 @@
     "index.html": "/rdf_visualizer/index.html",
     "static/css/main.f5e75be1.chunk.css.map": "/rdf_visualizer/static/css/main.f5e75be1.chunk.css.map",
     "static/js/2.bf9c56af.chunk.js.LICENSE.txt": "/rdf_visualizer/static/js/2.bf9c56af.chunk.js.LICENSE.txt",
-    "static/js/main.30928dd6.chunk.js.LICENSE.txt": "/rdf_visualizer/static/js/main.30928dd6.chunk.js.LICENSE.txt",
+    "static/js/main.bea41738.chunk.js.LICENSE.txt": "/rdf_visualizer/static/js/main.bea41738.chunk.js.LICENSE.txt",
     "static/media/logo.6ce24c58.svg": "/rdf_visualizer/static/media/logo.6ce24c58.svg"
   },
   "entrypoints": [
     "static/js/runtime-main.77285c2e.js",
     "static/js/2.bf9c56af.chunk.js",
     "static/css/main.f5e75be1.chunk.css",
-    "static/js/main.30928dd6.chunk.js"
+    "static/js/main.bea41738.chunk.js"
   ]
 }
