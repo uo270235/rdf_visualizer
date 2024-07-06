@@ -11,7 +11,8 @@ class PlantUMLGenerator {
    */
   constructor(json, umlText) {
     this.umlText = '';
-    //console.log(JSON.stringify(json));
+    console.log('acaaaaa----------------------------->');
+    console.log(JSON.stringify(json));
     this.json = json;
     if (umlText != undefined) this.umlText = umlText;
     this.counter = 0;
@@ -155,9 +156,15 @@ class PlantUMLGenerator {
    * @param {Object} expression - La expresión de restricción triple.
    * @param {string} parentId - El ID del nodo padre.
    */
+  /**
+   * Procesa una expresión de restricción triple.
+   * @param {Object} expression - La expresión de restricción triple.
+   * @param {string} parentId - El ID del nodo padre.
+   */
   processTripleConstraint(expression, parentId) {
     let attribute = `:${expression.predicate} [ `;
-    let attributeId = `${expression.predicate}_value`;
+    let attributeId = `${expression.predicate}_value`; // Usar nombre específico para el predicado
+
     if (expression.valueExpr) {
       if (
         expression.valueExpr.type === 'NodeConstraint' &&
@@ -167,7 +174,6 @@ class PlantUMLGenerator {
           .map((val) => (typeof val === 'string' ? `:${val}` : val.value))
           .join(', ');
         attribute += `${values} ]`;
-        attributeId = `:${expression.predicate} [ ${values} ]`;
       } else if (expression.valueExpr.type) {
         if (
           expression.valueExpr.type === 'ShapeAnd' ||
@@ -185,7 +191,7 @@ class PlantUMLGenerator {
               this.processNode(child, nestedNodeId);
             });
           }
-          attribute += `${expression.predicate}_value ]`;
+          attribute += `${attributeId} ]`;
         } else if (expression.valueExpr.type === 'ShapeNot') {
           const notNodeId = `NOT_${uniqid()}`;
           this.output.push(`component [ ] as ${notNodeId} <<NOT>>`);
@@ -193,7 +199,7 @@ class PlantUMLGenerator {
           this.processNode(expression.valueExpr.shapeExpr, notNodeId);
           attribute += `${attributeId} ]`;
         } else {
-          const nestedNodeId = `Nested_${uniqid()}`;
+          const nestedNodeId = `${expression.predicate}_value`; // Usar nombre específico para el predicado
           this.processNode(expression.valueExpr, nestedNodeId);
           attributeId = `:${expression.predicate} [ ${nestedNodeId} ]`;
           attribute += `${nestedNodeId} ]`;
@@ -201,7 +207,6 @@ class PlantUMLGenerator {
       }
     } else {
       attribute += ']';
-      attributeId = `:${expression.predicate} [ ]`;
     }
 
     const blankId = `Blank_${this.counterBlank}`;
@@ -258,7 +263,7 @@ class PlantUMLGenerator {
                     this.processNode(child, nestedNodeId);
                   });
                 }
-                attribute += `${expr.predicate}_value ]`;
+                attribute += `${attributeId} ]`;
               } else if (expr.valueExpr.type === 'ShapeNot') {
                 const notNodeId = `NOT_${uniqid()}`;
                 this.output.push(`component [ ] as ${notNodeId} <<NOT>>`);
@@ -266,7 +271,7 @@ class PlantUMLGenerator {
                 this.processNode(expr.valueExpr.shapeExpr, notNodeId);
                 attribute += `${attributeId} ]`;
               } else {
-                const nestedNodeId = `Nested_${uniqid()}`;
+                const nestedNodeId = `${expr.predicate}_value`; // Usar nombre específico para el predicado
                 this.processNode(expr.valueExpr, nestedNodeId);
                 attribute += `${nestedNodeId} ]`;
               }
@@ -285,12 +290,6 @@ class PlantUMLGenerator {
     if (parentId) {
       this.output.push(`${parentId} --> ${uniqueId}`);
     }
-
-    // attributes.forEach((attr) => {
-    //   if (attr.attributeId.startsWith('capacidad')) {
-    //     this.output.push(`${uniqueId} *--> ${attr.attributeId}`);
-    //   }
-    // });
   }
 
   /**
