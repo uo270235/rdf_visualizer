@@ -167,11 +167,6 @@ class PlantUMLGenerator {
    * @param {Object} expression - La expresión de restricción triple.
    * @param {string} parentId - El ID del nodo padre.
    */
-  /**
-   * Procesa una expresión de restricción triple.
-   * @param {Object} expression - La expresión de restricción triple.
-   * @param {string} parentId - El ID del nodo padre.
-   */
   processTripleConstraint(expression, parentId) {
     let attribute = `:${expression.predicate} [ `;
     let attributeId = `${expression.predicate}_value`; // Usar nombre específico para el predicado
