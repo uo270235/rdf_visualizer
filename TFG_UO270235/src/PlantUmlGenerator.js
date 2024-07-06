@@ -82,6 +82,11 @@ class PlantUMLGenerator {
    * @param {Object|string} node - El nodo a procesar.
    * @param {string} parentId - El ID del nodo padre.
    */
+  /**
+   * Procesa un nodo y lo añade al diagrama.
+   * @param {Object|string} node - El nodo a procesar.
+   * @param {string} parentId - El ID del nodo padre.
+   */
   processNode(node, parentId) {
     if (typeof node === 'string') {
       if (node === '') {
@@ -143,6 +148,12 @@ class PlantUMLGenerator {
         this.processTripleConstraint(node.expression, parentId);
       } else if (node.expression.type === 'EachOf') {
         this.processEachOf(node.expression, parentId);
+      }
+    } else if (node.type === 'Shape' && !node.expression) {
+      const blankId = `Blank_${this.counterBlank++}`;
+      this.output.push(`class ${blankId} {}`);
+      if (parentId) {
+        this.output.push(`${parentId} --> ${blankId}`);
       }
     } else if (Array.isArray(node.shapeExpr)) {
       node.shapeExpr.forEach((child) => {
